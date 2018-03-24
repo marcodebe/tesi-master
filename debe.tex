@@ -54,6 +54,13 @@ headsepline, % Uncomment to get a line under the header
   columns=fullflexible
 }
 
+\lstdefinestyle{customb}{
+  basicstyle=\footnotesize\ttfamily,
+  showspaces=false,
+  columns=fullflexible,
+  captionpos=b
+}
+
 \lstdefinestyle{customc}{
   basicstyle=\footnotesize\ttfamily,
   numbers=left,
@@ -67,6 +74,7 @@ headsepline, % Uncomment to get a line under the header
 \usepackage{mathpazo} % Use the Palatino font by default
 \usepackage{tabularx}
 \usepackage{marginnote}
+\usepackage{enumitem} 
 
 \usepackage[backend=bibtex,style=authoryear,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
 

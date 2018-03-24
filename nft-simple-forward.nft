@@ -1,0 +1,20 @@
+table inet inet-filter {
+	set my_ipv4_addrs {
+		type ipv4_addr;
+		elements = { 1.1.1.1, 1.2.3.4}
+	}
+
+	set my_ipv6_addrs {
+		type ipv6_addr;
+		elements = { fe00::1, fe00::2}
+	}
+	chain forward {
+		type filter hook forward priority 0;
+		ct state established,related counter accept
+		ct state invalid counter drop
+		tcp dport {22, 80, 443} ct state new counter accept
+		ip daddr @my_ipv4_addrs counter accept
+		ip6 daddr @my_ipv6_addrs counter accept
+	}
+}
+

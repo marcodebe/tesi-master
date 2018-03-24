@@ -120,8 +120,8 @@ esiste più la differenza tra kernel sperimentale e di produzione.
   \begin{table}[ht]
     \centering % used for centering table
       \begin{tabular}{@{}llcc@{}}
-	 \toprule
-	 {\bf Framework/tool} &         {\bf Anno}      &  {\bf Kernel} & {\bf Coder}\\ \midrule
+     \toprule
+     {\bf Framework/tool} &         {\bf Anno}      &  {\bf Kernel} & {\bf Coder}\\ \midrule
          ipfw     & 1994      & 1.0  & Alan Cox \\
          ipfwadm  & 1995-1999 & 1.2.$x$\marginnote{con $x>0$} - 2.0 & A.  Cox e Jon Vos\\ [0.5ex]
          ipchains & 1999-2001 & 2.2  & Rusty Russell \\ [0.5ex]
@@ -151,18 +151,19 @@ Ipfw e ipfwadm consentivano di realizzare funzioni di base di un firewall:
     \item masquerading
 \end{itemize}
 
-A partire dal kernel Linux 2.2 (1999) appare un nuovo sistema di packet
+A partire dal kernel Linux 2.2 (1999) viene rilasciato un nuovo sistema di packet
 filtering: {\em ipchains}. Ipchains \`e sostanzialmente una completa
 riscrittura del codice di ipfw di cui espande le funzionalità.  In particolare
-ipchains gestisce ulteriori protocolli oltre a TCP, UDP e ICMP, ed inoltre [
+ipchains gestisce ulteriori protocolli oltre a TCP, UDP e ICMP, ed inoltre è
 in grado di gestire la frammentazione dei pacchetti.
 
-Anche ipchains come ipfwadm realizza per; un firewall non stateful; l'unica
-opzione che ha per decidere se inoltrare all'interno un pacchetto consiste nel
-verificare se il bit ACK \`e settato, ma questo significa fidarsi del
-pacchetto di cui si deve stabilire il verdetto.
-Ovviamente questa politica è inerentemente meno sicura in quanto è facile
-inviare pacchetti costruiti ad arte per superare i filtri del firewall.
+Anche ipchains come ipfwadm realizza però un firewall non stateful; l'unica
+opzione che ha per decidere se accettare un pacchetto entrante consiste nel
+verificare se il bit ACK \`e settato (significa che è una risposta relativa ad
+una connessione già stabilita), ma questo significa fidarsi del pacchetto di
+cui si deve stabilire il verdetto.  Ovviamente questa politica è inerentemente
+oco sicura in quanto è facile inviare pacchetti costruiti ad arte per
+superare i filtri del firewall.
 
 Nel kernel 2.4 assistiamo nuovamente ad una completa riscrittura delle
 funzionalità di filtro e firewall di Linux, viene introdotto il framework {\em
@@ -206,20 +207,32 @@ sia arricchito di molti moduli aggiuntivi.
 A partire dal kernel 3.13 (2014) viene introdotto {\em nftables} con l'intento
 di soppiantare iptables.  Il nuovo framework di classificazione di pacchetti
 nasce con lo scopo di superare quelli che vengono considerati difetti o
-carenze di iptables.  In particolare nftables riduce il numero di linee di
-codice nel kernel riorganizzando e unificando quello che in itables è
+carenze di iptables.
+
+\begin{figure}[H]
+\begin{center}
+      \includegraphics[width=\linewidth]{Netfilter-components.svg.png}
+      \caption{Componenti di Netfilter}
+      \label{fig:netfilter}
+\end{center}
+\end{figure}
+
+Dalla figura \ref{fig:netfilter} risulta evidente la maggiore complessità e
+ridondanza di Xtables rispetto a nftables.  Nftables riduce il numero di linee
+di codice nel kernel riorganizzando e unificando quello che in iptables è
 replicato per i diversi protocolli.  Inoltre nftables introduce strutture
-ati, insiemi\footnote{iptables non gestisce nativamente gli insiemi ma esiste
+dati, insiemi\footnote{iptables non gestisce nativamente gli insiemi ma esiste
 il tool ipset che fornisce a iptables questa funzionalità}, dizionari e mappe,
-che semplificano e ottimizzano le regole del firewall, migliorando leggibilità
-delle regole e le prestazioni. Un'altra caratteristica fondamentale consiste
-nel fatto che mentre per iptables ogni regola viene introdotta da un comando
-con i relativi argomenti, nftables consiste invece in un vero e proprio
-linguaggio nel quale viene descritto l'intero firewall, e le regole vengono
+che permettono di semplificare e ottimizzano le regole del firewall.
+Migliorano anche la leggibilità delle regole e le prestazioni.
+
+Un'altra caratteristica molto importante consiste nel fatto che con iptables
+ogni regola viene introdotta dal comando {\em iptables} con relativi
+argomenti; nftables invece consiste di un vero e proprio linguaggio nel quale
+viene descritto e configurato l'intero firewall; inoltre le regole vengono
 attivate atomicamente.
 
 \chapter{Linux firewall nella rete Galliera}
-
 \section{Cenni storici}
 
 La LAN dell'ospedale Galliera è collegata ad internet dal 1996 e sin
@@ -252,9 +265,9 @@ reti locali; quello interno regole il traffico tra le reti locali e l'esterno.
 
 \begin{figure}
 \begin{center}
-	  \includegraphics[width=7cm]{rete.png}
-	  \caption{Schema delle reti e dei due firewall}
-	  \label{fig:rete}
+      \includegraphics[width=\linewidth]{rete.png}
+      \caption{Schema delle reti e dei due firewall}
+      \label{fig:rete}
 \end{center}
 \end{figure}
 
@@ -264,16 +277,16 @@ periodicamente (ogni 5 minuti).  Le liste di indirizzi provengono da:
 
 \begin{itemize}
     \item \href{https://iplists.firehol.org/?ipset=firehol\_level1}{''FireHol
-	Level1''}\footnote{https://iplists.firehol.org/?ipset=firehol\_level1} (oltre
-	7000 sottoreti),
+    Level1''}\footnote{https://iplists.firehol.org/?ipset=firehol\_level1} (oltre
+    7000 sottoreti),
     \item \href{https://ransomwaretracker.abuse.ch/downloads/RW\_IPBL.txt}{''Ransomware
-	Tracker}\footnote{https://ransomwaretracker.abuse.ch/downloads/RW\_IPBL.txt}
-	(circa 400 indirizzi)
+    Tracker}\footnote{https://ransomwaretracker.abuse.ch/downloads/RW\_IPBL.txt}
+    (circa 400 indirizzi)
     \item {\em fail2ban} su ssh: blacklist auto-generata in base ai tentativi
-	falliti di connessione via ssh (circa 9000 indirizzi al momemnto)
+    falliti di connessione via ssh (circa 9000 indirizzi al momemnto)
     \item lista di indirizzi di botnet autoprodotta da script che analizzano
-	tentativi di bruteforce tipicamente su servizi di posta (oltre 12.000
-	indirizzi)
+    tentativi di bruteforce tipicamente su servizi di posta (oltre 12.000
+    indirizzi)
 \end{itemize}
  
 \noindent Il totale delle regole supera le 20 mila.
@@ -295,12 +308,14 @@ decresce mai, ad esempio al momento sono presenti oltre 23 mila indirizzi mac.
 
 \section{Problemi dell'infrastruttura}
 
-Nella sezione precedente ho messo in evidenza gli insiemi di indirizzi e le
-loro dimensioni perché sono tali insiemi quelli che hanno evidenziato, ad un
-certo punto nell'arco del 2017, alcune carenze della soluzione implementata.
+Nella sezione precedente ho messo in evidenza le dimensioni degli insiemi di
+indirizzi e le perché proprio la gestione di così tante regole ha, durante il
+2017, portato alla luce alcune carenze della soluzione implementata.
 
-Inizialmente, infatti, per ogni indirizzo era prevista una regola di tipo {\em
-REJECT}; ciò significa che prima di poter classificare ogni singolo pacchetto,
+Inizialmente, infatti, per ogni indirizzo era prevista una regola
+\footnote{di tipo {\em REJECT} per le blacklist e di tipo {\em RETURN} per la
+gestione del wifi free},
+ciò significa che prima di poter classificare ogni singolo pacchetto,
 a parte ovviamente quelli subito accettati in virtù di regole relative a
 traffico {\em REALTED/ESTABLISHED}.  Questo approccio basato su una regola
 per ogni indirizzo risulta essere non efficace, superata una certa
@@ -314,11 +329,10 @@ set}, ma un framework esterno, {\em ipset}, fornisce questa funzionalità
 permettendo di ridurre decine di migliaia di regole ad un unica regola (nello
 specifico una regola per ogni insieme).
 
-I problemi dovuti all'eccessivo numero di regole li ho quindi risolti
-introducendo l'uso di ipset su entrambe i firewall.  Nel caso del firewall
-interno è stato anche necessario aggiornare il kernel per poter generare set
-contenenti mac address in quanto questa funzionalità non è stata sempre
-presente.
+I problemi dovuti all'eccessivo numero di regole li ho quindi risolti usando
+ipset su entrambe i firewall.  Nel caso del firewall interno è stato anche
+necessario aggiornare il kernel per poter generare set contenenti mac address
+in quanto questa funzionalità non è stata sempre presente.
 
 L'introduzione di ipset ha richiesto, oltre alla modifica della configurazione
 dei due firewall, anche le revisione del codice del captive portal e dei
@@ -413,17 +427,26 @@ ip saddr @testsources nftrace set 1 comment "DEBUG: XXX remove in production"
 %                                                    {NETWORK}
 %\end{Verbatim}
 
-Lo schema rappresenta i possibili percorsi di un pacchetto: tra parentesi tonde
-gli hook ai quali si possono agganciare le catene di regole.
+Lo schema rappresenta i possibili percorsi di un pacchetto: l'asterisco
+evidenzia gli hook ai quali si possono associare le catene contenenti le
+regole:
+\begin{itemize}
+  \item ingress
+  \item prerouting
+  \item input
+  \item output
+  \item forwarding
+  \item output
+  \item postrouting
+\end{itemize}
+\noindent La possibilit\`a di intervenire precocemente sul pacchetto, appena
+passato al livello superiore dal driver della scheda di rete, \`e fondamentale
+per gestire attacchi tipo DDoS: questo \`e reso possibile dall'hook ingress
+che interviene prima del prerouting.
 
-La possibilit\`a di intervenire precocemente sul pacchetto, appena passato al
-livello superiore dal driver della scheda di rete, \`e fondamentale per
-gestire attacchi tipo DDoS: questo \`e reso possibile dall'hook ingress che
-interviene prima del prerouting.
-
-I pacchetti che hanno come destinazione qualche processo locale (cioè sono
-indirizzati all'host stesso) sono gestibili tramite l'hook input ed
-analogamente quelli generati da processi locali tramite l'hook output.
+I pacchetti che destinati a qualche processo locale (cioè sono indirizzati
+all'host stesso) sono gestiti tramite l'hook input ed analogamente quelli
+generati da processi locali tramite l'hook output.
 
 Il traffico che deve essere inoltrato fra le due reti viene gestito tramite
 l'hook forward. Il NAT interviene in prerouting (DNAT) e postrouting (SNAT).
@@ -487,4 +510,70 @@ Per ognuna delle categorie sopra elencate viene attivato il contatore.
 %$ sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 %\end{lstlisting}
 
-\chapter{}
+\chapter{Migrazione Captive Portal}
+
+Lo schema di identificazione ed autorizzazione è il seguente:
+\begin{enumerate}
+    \item il pacchetto viene analizzato per verificare se il mac
+    address è stato autorizzato
+    \begin{itemize}
+        \item sì: allora finisce l'analisi e il pacchetto viene inoltrato
+        \item no: il pacchetto viene marcato (0x63)
+    \end{itemize}
+    \item in fase di prerouting, se il pacchetto è marcato ed la porta di
+    destinazione è http allora viene reindirzzato (DNAT) alla pagina del
+    captive portal
+    \item negli altri casi (pacchetto marcato e traffico non http) allora il
+    pacchetto viene scartato in fase di forwarding
+\end{enumerate}
+
+La pagina web del captive porta chiede all'utente di inserire un numero di
+cellulare in suo possesso al quale invia un codice OTP via SMS. Quando
+l'utente dimostra, inviandolo (POST), di essere a conoscenza del codice, il
+sistema registra il suo mac address fra quelli autorizzati e salva in un
+database sqlite l'associazione (mac address, numero di telefono).
+
+La configurazione di iptables che realizza quanto descritto sopra è la
+seguente:
+
+\begin{minipage}{\linewidth}
+\lstinputlisting[caption=Mangle per wifi free, style=customc,
+label={lst:iptables-wifi}]{captive-iptables.conf}
+\end{minipage}
+
+\noindent Il listato \ref{lst:iptables-wifi} rappresenta la configurazione del
+firewall limitatamente alle regole strettamente necessarie a realizzare la
+funzionalità di captive portal. Il fatto di aver eliminato le regole non
+pertinenti il caso in esame può far sembrare inutili o ridondanti alcune di
+quelle elencate.
+
+Le prime nove righe sono relative alla marcatura in fase di prerouting:
+\begin{itemize}[itemindent=2em]
+    \item[(riga 4)] il traffico proveniente dalla rete wifi (192.168.16.0/20)
+    verrà analizzato dalla catena internet (salta alla riga 8)
+    \item[(riga 8)] se il mac address sorgente è contenuto nel set captive\_ok
+    ritorna
+      \item[(riga 9)] marca il pacchetto con il valore 0x63 (99 decimale)
+  \end{itemize}
+  La tavola filter, riga 11:
+  \begin{itemize}[itemindent=2em]
+      \item[(riga 12)] di default scarta i pacchetti che non soddisfano una delle regole
+      \item[(riga 13)] accetta il traffico relativo a connessioni già attiv
+      \item[(riga 14)] scarta i pacchetti marcati con il valore 0x63
+\end{itemize}
+La tavola di NAT ha il compito di indirizzare il traffico http verso il sito
+del captive portal.
+
+Le righe dalla $20$ in poi sono relative all'insieme che contiene i mac
+address autorizzati\footnote{gli indirizzi non sono quelli reali perché anche
+il mac address è un dato personale e agli utenti non è stato notificato un uso
+di questo tipo dei loro dati}: captive\_ok.
+L'intestazione descrive la struttura dati di tipo hash di mac address, a
+seguire tutti gli elementi dell'insieme.
+
+Il porting di questa logica a nftables è la seguente:
+\lstinputlisting[caption=Captive portal con nftables, style=customc,
+label={lst:nftables-wifi}]{captive-nftables.conf}
+
+
+
