@@ -27,7 +27,7 @@
 
 Il progetto che \`e stato realizzato ha avuto origine da considerazioni
 relative alla necessit\`a di aggiornare il sistema di firewall a protezione
-della rete interna all'ospedale Galliera.
+della rete interna dell'ospedale Galliera.
 
 La LAN dell'ospedale \`e connessa ad internet dal 1996 e sin da allora il
 traffico di rete da e verso l'esterno \`e stato regolato e monitorato da
@@ -38,21 +38,21 @@ sistemi si sono dimostrati adeguati sia per quanto riguarda le funzionalit\`a
 che per prestazioni.
 
 Tuttavia nell'arco del 2017 si sono presentate alcune situazioni di
-criticit\`a, dovute sostanzialmente al grande numero di regole sui firewall,
-per le quali sono dovuto perci\`o intervenire per aggiornare e rivedere la
-configurazione dei due router/firewall principali.
+criticit\`a, dovute sostanzialmente al grande numero di regole sui firewall.
 
-In seguito a questi segnali di possibile obsolescenza del sistema ho fatto delle
-ricerche per capire quali fossero le attuali alternative agli strumenti scelti
-oramai circa 17 anni fa, cio\`e in pratica alternative ad {\em iptables}.
-In effetti l'alternativa c'\`e: si chiama nftables ed \`e un progetto nato
-proprio con lo scopo di soppiantare {\em iptables} superandone tutte le limitazioni.
+Pur essendo riuscito a risolvere i problemi ho ritenuto di dover considerare
+questi segnali di possibile obsolescenza del sistema, studiando le attuali
+alternative agli strumenti scelti oramai circa 17 anni fa: cio\`e in pratica
+le alternative ad {\em iptables}.  In effetti l'alternativa c'\`e: si chiama
+nftables ed il suo scopo è proprio quello di soppiantare {\em iptables}
+superandone tutte le limitazioni.
 
-Il progetto di migrazione da {\em iptables} a nftables \`e consistito nella
-riorganizzazione delle regole dei due firewall, nella creazione di script di
-gestione e relativi automatismi, e nella preparazione di uno scenario di test
-usando macchine virtuali.
+Il progetto di migrazione da {\em iptables} a nftables \`e consistito prima di
+tutto nello studio del nuovo sistema, nella riorganizzazione delle regole dei
+due firewall (operazione ancora in corso), e nella preparazione di scenari di
+test usando macchine virtuali.
 
+\chapter{}
 Nel frattempo l'analisi dello stato delle cose del kernel Linux ha evidenziato
 una recente presa di posizione di molti, tra cui importanti sviluppatori e
 aziende, che sostiene l'impossibilit\`a di elim
@@ -107,68 +107,74 @@ soprattutto nei grandi datacenter (cloud).
 
 \label{Cenni storici} % For referencing the chapter elsewhere, use \ref{Chapter1} 
 
-Le prime funzionalità di firewall sono state introdotte nel kernel e nello
-userspace Linux nel 1994.
+Per inquadrare l'argomento Linux firewall ritengo possa essere utile ed
+interessante fornire un breve riassunto dell'evoluzione degli strumenti di
+per la classificazione ed il filtraggio dei pacchetti nel kernel Linux.
 
-I firewall basati su Linux sono disponibili in una varietà di sapori.
+\begin{center}
+  \begin{table}[ht]
+    \caption{Evoluzione dei tool} % title of Table
+    \centering % used for centering table
+      \begin{tabular}{l l c c} % centered columns (4 columns)
+	\hline\hline %inserts double horizontal lines
+	Tool  &         Anni      &  Kernel & Coder\\ [0.5ex]
+	\hline 
+	\hline
+	ipfw  &         1994      &  1.0 & Alan Cox \\ [0.5ex]
+	\hline
+	ipfwadm  &      1995-1999 &  1.2.x\marginnote{con x>0} - 2.0.y & A.
+Cox e Jon Vos\\ [0.5ex]
+	\hline
+	ipchains &      1999-2001 &  2.2.x & Rusty Russell \\ [0.5ex]
+	\hline
+	iptables &      2001-     &  2.4.x & Rusty Russell \\ [0.5ex]
+	\hline
+	nftables &      2014-     &  3.13 \\ [0.5ex]
+	\hline
+	eBPF/XDP &     &  \\ [0.5ex]
+     \end{tabular}  
+  \end{table}
+\end{center}
 
-Originariamente, i firewall Linux erano basati sul codice ipfw (che a
-sua volta era stato preso da Berkeley Software Distribution [BSD] di UNIX).
+Le prime funzionalità di firewall sono state introdotte nel nel 1994 grazie al
+lavoro di Alan Cox che ne ha fatto il porting da BSD.
 
-Questo codice costituiva la prima versione delle funzionalità del firewall
-all'interno del kernel di Linux. Il successivo passo evolutivo, dopo ipfw, è
-stata l'utility {\em ipfwadm} (che in realtà era una riscrittura del
-corrispondente {\em ipfw} di BSD).
+Questo codice costituisce la prima versione delle funzionalità di firewall
+all'interno del kernel Linux. Il successivo passo evolutivo, dopo ipfw, è
+stato {\em ipfwadm}, in realtà una riscrittura del corrispondente {\em ipfw}
+di BSD da parte di Alan Cox e Jos Vos.
 
-Il codice, kernel space e user space, sono stati resi disponibili nei kernel Linux
-a partire dalla serie 1.0 (1994) e hanno fornito sufficiente flessibilità consentendo
-all'amministratore di eseguire quanto segue:
+Ipfw e ipfwadm consentivano di realizzare funzioni di base di un firewall:
 
 \begin{itemize}
-
-    \item Modifica delle politiche predefinite per tutte le categorie di
-        firewall
-
-    \item Aggiunta automatica delle regole extra necessarie in caso di
-        hostname con più di un indirizzo IP
-    
-    \item Elencare e ripristinare atomicamente i contatori di pacchetti /
-        byte per realizzare un sistema di contabilità affidabile
-
-    \item Elencare le regole esistenti in diversi formati
-
+    \item accounting di pacchetti IP,
+    \item firewall di ingresso,
+    \item firewall di uscita,
+    \item firewall di inoltro,
+    \item redirezione (permette proxy trasparente)
+    \item masquerading
 \end{itemize}
 
-{\em ipfwadm} introduce il supporto per ulteriori funzionalità:
+A partire dal kernel Linux 2.2 (1999) appare un nuovo sistema di packet
+filtering: {\em ipchains}. Ipchains \`e sostanzialmente una completa
+riscrittura del codice di ipfw di cui espande le funzionalità.  In particolare
+ipchains gestisce ulteriori protocolli oltre a TCP, UDP e ICMP, ed inoltre [
+in grado di gestire la frammentazione dei pacchetti.
 
-\begin{itemize}
-    \item specifica del nome e/o dell'indirizzo delle interfaccie nelle regole
-
-    \item regole bidirezionali e match di TCP ACK e TCP SYN
-
-    \item redirezione (utile per proxy trasparenti)
-
-    \item Masquerading (SNAT)
-\end{itemize}
-
-A partire dal kernel Linux 2.2 (1999) un nuovo sistema di packet filtering è
-stato introdotto, {\em ipchains}. Il filtro ipchains, grazie ad una significativa
-riscrittura del codice di ipfw, ne espandende le funzionalità.
-
-Anche ipchains come ipfwadm realizza un firewall non stateful e deve
-quindi essere configurato in modo da accettare pacchetti TCP con il bit ACK
-settato per consetire il ritorno di traffico da un server remoto. Di
-conseguenza un firewall ipchains si fida delle informazioni contenute nel
-pacchetto per stabilire se questo fa parte di una connesione stabilita.
+Anche ipchains come ipfwadm realizza per; un firewall non stateful; l'unica
+opzione che ha per decidere se inoltrare all'interno un pacchetto consiste nel
+verificare se il bit ACK \`e settato, ma questo significa fidarsi del
+pacchetto di cui si deve stabilire il verdetto.
 Ovviamente questa politica è inerentemente meno sicura in quanto è facile
 inviare pacchetti costruiti ad arte per superare i filtri del firewall.
 
-Nel kernel 2.4 assistiamo ad una nuova completa riscrittura delle funzionalità
-di filtro e firewall di Linux, viene introdotto il framework {\em Netfilter}.
+Nel kernel 2.4 assistiamo nuovamente ad una completa riscrittura delle
+funzionalità di filtro e firewall di Linux, viene introdotto il framework {\em
+Netfilter} (comunemente noto come iptables).
 
-Netfilter è molto più maturo rispetto ai suoi predecessori, risulta possibile
-realizzare firewall stateful con maggiori capacità di ispezione dei
-pacchetti e capacità di {\em log}.
+Netfilter è molto più maturo rispetto ai suoi predecessori, permette di
+realizzare firewall stateful con maggiori capacità di ispezione dei pacchetti
+e capacità di {\em log}.
 
 Alcune delle caratteristiche di NetFilter sono:
 
@@ -189,15 +195,14 @@ da diverse aziende che ne forniscono supporto tecnico.
 
 Il tool di configurazione di NetFilter, che è poi il nome col quale è noto il
 framework stesso, è {\em iptables}.
-
-In realtà gli strumenti di configurazione del framework NetFilter sono più di
-uno: oltre a iptables per configurare regole IPv4, esistono ip6tables per
-regole IPV6, ebtables per realizzare firewall layer 2 su macchine Linux bridge
+In realtà gli strumenti di configurazione del framework NetFilter formano una
+famiglia: oltre a iptables, che gestisce regole IPv4, esistono ip6tables per
+regole IPV6, ebtables per realizzare firewall layer 2 (Linux bridge)
 e arptables che lavora nello specifico su messaggi ARP.
 
-Ai diversi tool corrispondono, nel kernel, parti di codice ad-hoc per la
-specifica esigenza: IPv4, IPv6, EB, ARP.  Ad un certo punto si inizia ad
-utilizzare anche il termine {\em Xtables} per definire l'intero firewall.
+Ai diversi tool corrispondono, nel kernel, parti di codice ad-hoc per il
+specifico protocollo: IPv4, IPv6, EB, ARP.  A volte si usa anche il termine
+{\em Xtables} per definire l'intero firewall.
 
 La possibilità di aggiungere plugin ha fatto s\'i che nel tempo Xtables si
 sia arricchito di molti moduli aggiuntivi.
@@ -208,7 +213,7 @@ nasce con lo scopo di superare quelli che vengono considerati difetti o
 carenze di iptables.  In particolare nftables riduce il numero di linee di
 codice nel kernel riorganizzando e unificando quello che in itables è
 replicato per i diversi protocolli.  Inoltre nftables introduce strutture
-dati, insiemi\footnote{iptables non gestisce nativamente gli insiemi ma esiste
+ati, insiemi\footnote{iptables non gestisce nativamente gli insiemi ma esiste
 il tool ipset che fornisce a iptables questa funzionalità}, dizionari e mappe,
 che semplificano e ottimizzano le regole del firewall, migliorando leggibilità
 delle regole e le prestazioni. Un'altra caratteristica fondamentale consiste
@@ -236,9 +241,9 @@ vedremo in seguito i dettagli di come si possa prospettare la transizione da
 iptables al suo successore (spoiler: potrebbe non essere nftables).
 
 L'uso del firewall nei primi anni era limitato all'implementazione di filtri
-per il traffico in ingresso verso i servizi esposti a internet e al
-{\em masquerading} o SNAT (Source Network Address Translation) degli indirizzi
-IPv4 interni (di classe riservata) per l'inoltro del traffico verso internet.
+per il traffico in ingresso verso i servizi esposti a internet e al {\em
+masquerading} o SNAT (Source Network Address Translation) degli indirizzi IPv4
+interni (di classe riservata) per l'inoltro del traffico verso internet.
 
 \section{Architettura attuale}
 
@@ -275,7 +280,7 @@ periodicamente (ogni 5 minuti).  Le liste di indirizzi provengono da:
 	indirizzi)
 \end{itemize}
  
-Si tratta quindi di oltre 20 mila regole.
+\noindent Il totale delle regole supera le 20 mila.
 
 Il firewall interno ha la particolarità di dover gestire le regole del {\em
 captive portal}: si tratta di abilitare il traffico verso internet dei
@@ -325,20 +330,81 @@ programmi di generazione di black list.
 
 \section{Opportunità di migrazione a nftables}
 
-L'uso di ipset ha risolto i problemi, tuttavia mi sono chiesto se non fosse il
-caso di iniziare a prevedere la migrazione a nftables.
+L'uso di ipset ha risolto i problemi, tuttavia ho voluto verificare cosa
+comporti la migrazione da iptable a nftables, in termini di impegno necessario
+rispetto ai vantaggi offerti.
 
 Come accennato in precedenza, nftables si propone come framework completamente
-nuovo, più che come evoluzione di iptables: il codice kernel space è stato
-interamente riscritto, eliminando le ridondanze, e l'interfaccia di
-configurazione è diventata un vero e proprio linguaggio di programmazione a
-differenza di iptables dove ogni regola viene inserita da un commando con
-relativi argomenti.
+nuovo, più che come evoluzione di iptables  e l'interfaccia di configurazione
+è diventata un vero e proprio linguaggio di programmazione, a differenza di
+iptables dove ogni regola viene inserita da un commando con relativi
+argomenti.  Ci\`o significa dover riprogrammare tutte le logiche all'interno
+del nuovo framwork.
+
+\section{Confronto tra iptables e nftables}
+
+Vediamo quali sono le principali novit\`a introdotte da nftables.
+\begin{itemize}
+    \item supporto nativo per dual stack IPv4 e IPv6
+    \item supporto nativo per strutture dati (importanti per le prestazioni):
+    set, mappe, dizionari e concatenazioni
+    \item strumenti di debug e report decisamente migliori
+    \item aggiunta dell'hook ingress per migliorare le prestazioni
+    \item layout di regole flessibile, partendo da un insieme vuoto, rispetto
+    al classico layout statico di iptables (filter/INPUT, nat/PREROUTING,
+    \ldots)
+    \item contatori opzionali e azioni multiple in una singola regola (ad
+    esempio si pu\`o incrementare un contatore, loggare e eseguire NAT nella
+    stessa regola)
+    \item migliori opzioni di gestione dell'insieme di regole, aggiornamenti
+    delle regole completamente atomici e incrementali
+\end{itemize}
+
+Si possono quindi inserire regole che valgono contestualemnte per IPv4 e IPv6,
+mentre le strutture dati consentono di migliorare le prestazioni e la
+leggibilit\`a delle regole, oltre a non richiedere il supporto di tool
+esterni.
+
+Gli strumenti di debug e log sono molto potenti, e quindi utili: \`e ad
+esempio possibile tracciare l'intero percorso di un singolo pacchetto
+attraverso le regole.
+
+La possibilit\`a di intervenire precocemente sul pacchetto, appena passato al
+livello superiore dal driver della scheda di rete, \`e fondamentale per
+gestire attacchi tipo DDoS: questo \`e reso possibile dall'hook ingress che
+interviene prima del prerouting.
+
+Il layout iniziale di nftables \`e semplicemente l'insieme vuoto,
+l'amministratore \`e libero di configurare tavole (table) e catene
+(chain)\footnote{Le tavole sono contenitori di catene che a loro volta
+contengono regole}
+nel modo ritenuto pi\`u adatto al problema da risolvere.
+
 
 Un semplice esempio di configurazione per un server web potrebbe essere
 questo:
 
 \lstinputlisting[caption=Semplice esempio per server web, style=customc]{nftables-web.conf}
+
+\noindent Notare, riga 9, che le connessioni già stabilite o relative a
+connessioni già stabilite, l'informazione è ricavata dalla conntrack table,
+sono accettate.
+I servizi raggiungibili dall'esterno sono ssh, http e https, tutto il resto
+viene ignorato (drop) senza inviare "ICMP host unreachable". Inoltre i
+pacchetti rifiutati vengono contati (counter).
+
+\lstinputlisting[caption=Semplice esempio di router/firewall, style=customc]{nft-simple-forward.nft}
+
+\noindent Questo esempio descrive il comportamento di un semplice
+router/firewall. La tavola è associata ai protocolli IPv4 e IPv6 (inet) e
+definisce due insiemi contenenti indirizzi di entrambe i tipi (righe 2 e 7).
+Al solito viene accettato traffico relativo a connessioni attive (riga 13)
+mentre viene ignorato traffico non valido (causato da stealth port scan o da
+problemi nella conntrack table o da cause benigne).
+Oltre ad accettare connessioni verso qualsiasi server ssh e http(s), un
+verdetto positivo è previsto anche per qualsiasi connessione verso i server
+elencati ei due set.
+Per ognuna delle categorie sopra elencate viene attivato il contatore.
 
 %\begin{lstlisting}
 %$ sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
