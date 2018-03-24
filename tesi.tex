@@ -107,27 +107,31 @@ soprattutto nei grandi datacenter (cloud).
 
 \label{Cenni storici} % For referencing the chapter elsewhere, use \ref{Chapter1} 
 
-Per inquadrare l'argomento Linux firewall ritengo possa essere utile ed
-interessante fornire un breve riassunto dell'evoluzione degli strumenti di
-per la classificazione ed il filtraggio dei pacchetti nel kernel Linux.
+Per inquadrare l'argomento Linux firewall ritengo possa essere interessante
+fornire un breve riassunto dell'evoluzione degli strumenti per la
+classificazione ed il filtraggio dei pacchetti nel kernel Linux. Nella tabella \ref{tab:history}
+vengono considerate solo i rilasci nei kernel stabili. Fino alla serie 2.6.x le
+nuove fetures venivano introdotte sperimentalmente nelle versioni con major
+revision number dispari, ad esempio 2.3.4; dalla versione 3 questo cambia e non
+esiste più la differenza tra kernel sperimentale e di produzione.
 
 \begin{center}
+  \label{tab:history}
   \begin{table}[ht]
-    \caption{Evoluzione dei tool} % title of Table
     \centering % used for centering table
       \begin{tabular}{@{}llcc@{}}
-	\toprule
-	{\bf Framework/tool}  &         {\bf Anno}      &  {\bf Kernel} & {\bf Coder}\\ \midrule
-	ipfw  &         1994      &  1.0 & Alan Cox \\
-	ipfwadm  &      1995-1999 &  1.2.$x$\marginnote{con $x>0$} - 2.0 & A.  Cox e Jon Vos\\ [0.5ex]
-	ipchains &      1999-2001 &  2.2 & Rusty Russell \\ [0.5ex]
-	iptables &      2001-     &  2.4 & Rusty Russell \\ [0.5ex]
-	nftables &      2014-     &  3.13 & gli stessi di iptables \\ [0.5ex]
-	eBPF/XDP &     &  \\ \bottomrule
-     \end{tabular}  
+	 \toprule
+	 {\bf Framework/tool} &         {\bf Anno}      &  {\bf Kernel} & {\bf Coder}\\ \midrule
+         ipfw     & 1994      & 1.0  & Alan Cox \\
+         ipfwadm  & 1995-1999 & 1.2.$x$\marginnote{con $x>0$} - 2.0 & A.  Cox e Jon Vos\\ [0.5ex]
+         ipchains & 1999-2001 & 2.2  & Rusty Russell \\ [0.5ex]
+         iptables & 2001-     & 2.4  & Rusty Russell \\ [0.5ex]
+         nftables & 2014-     & 3.13 & gli stessi di iptables \\ [0.5ex]
+         eBPF/XDP &           &      & \\ \bottomrule
+      \end{tabular}  
+    \caption{Evoluzione dei tool (kernel stable)} % title of Table
   \end{table}
 \end{center}
-
 Le prime funzionalità di firewall sono state introdotte nel nel 1994 grazie al
 lavoro di Alan Cox che ne ha fatto il porting da BSD.
 
@@ -375,32 +379,39 @@ ip saddr @testsources nftrace set 1 comment "DEBUG: XXX remove in production"
 
 \section{Packet flow in nftables}
 
-\begin{Verbatim}[fontsize=\scriptsize, fontseries=b, fontfamily=courier, samepage=true]
-    {NETWORK}
-        |
-        |
-        v                   
-    (ingress)               .----> <Local Process> ----.
-        |                   |                          |
-        |                   |                          |
-        |                   |                          |
-   (prerouting)             |                          |
-        |                   |                          |
-        |                   |                          |
-        v                   |                          v
-[Routing Decision] ----> (input)                   (output) ----> [Routing Decision]
-        |                                                                 |
-        |                                                                 |
-        |                                               .-----------------'
-        |                                               |
-        |                                               v
-        '------------------------> (forward) ----> (postrouting)
-                                                        |
-                                                        |
-                                                        |
-                                                        v
-                                                    {NETWORK}
-\end{Verbatim}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{flow.svg.png}
+    \caption{Schema del flusso di pacchetti in ftables}
+    \label{fig:flow}
+\end{figure}
+
+%\begin{Verbatim}[fontsize=\scriptsize, fontseries=b, fontfamily=courier, samepage=false]
+%    {NETWORK}
+%        |
+%        |
+%        v                   
+%    (ingress)               .----> <Local Process> ----.
+%        |                   |                          |
+%        |                   |                          |
+%        |                   |                          |
+%   (prerouting)             |                          |
+%        |                   |                          |
+%        |                   |                          |
+%        v                   |                          v
+%[Routing Decision] ----> (input)                   (output) ----> [Routing Decision]
+%        |                                                                 |
+%        |                                                                 |
+%        |                                               .-----------------'
+%        |                                               |
+%        |                                               v
+%        '------------------------> (forward) ----> (postrouting)
+%                                                        |
+%                                                        |
+%                                                        |
+%                                                        v
+%                                                    {NETWORK}
+%\end{Verbatim}
 
 Lo schema rappresenta i possibili percorsi di un pacchetto: tra parentesi tonde
 gli hook ai quali si possono agganciare le catene di regole.
@@ -463,7 +474,7 @@ pacchetti rifiutati vengono contati (counter).
 
 \noindent Questo esempio descrive il comportamento di un semplice
 router/firewall. La tavola è associata ai protocolli IPv4 e IPv6 (inet) e
-definisce due insiemi contenenti indirizzi di entrambe i tipi (righe 2 e 7).
+definisce due insiemi contenenti indirizzi dei due tipi (righe 2 e 7).
 Al solito viene accettato traffico relativo a connessioni attive (riga 13)
 mentre viene ignorato traffico non valido (causato da stealth port scan o da
 problemi nella conntrack table o da cause benigne).
