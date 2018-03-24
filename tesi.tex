@@ -115,23 +115,15 @@ per la classificazione ed il filtraggio dei pacchetti nel kernel Linux.
   \begin{table}[ht]
     \caption{Evoluzione dei tool} % title of Table
     \centering % used for centering table
-      \begin{tabular}{l l c c} % centered columns (4 columns)
-	\hline\hline %inserts double horizontal lines
-	Tool  &         Anni      &  Kernel & Coder\\ [0.5ex]
-	\hline 
-	\hline
-	ipfw  &         1994      &  1.0 & Alan Cox \\ [0.5ex]
-	\hline
-	ipfwadm  &      1995-1999 &  1.2.x\marginnote{con x>0} - 2.0.y & A.
-Cox e Jon Vos\\ [0.5ex]
-	\hline
-	ipchains &      1999-2001 &  2.2.x & Rusty Russell \\ [0.5ex]
-	\hline
-	iptables &      2001-     &  2.4.x & Rusty Russell \\ [0.5ex]
-	\hline
-	nftables &      2014-     &  3.13 \\ [0.5ex]
-	\hline
-	eBPF/XDP &     &  \\ [0.5ex]
+      \begin{tabular}{@{}llcc@{}}
+	\toprule
+	{\bf Framework/tool}  &         {\bf Anno}      &  {\bf Kernel} & {\bf Coder}\\ \midrule
+	ipfw  &         1994      &  1.0 & Alan Cox \\
+	ipfwadm  &      1995-1999 &  1.2.$x$\marginnote{con $x>0$} - 2.0 & A.  Cox e Jon Vos\\ [0.5ex]
+	ipchains &      1999-2001 &  2.2 & Rusty Russell \\ [0.5ex]
+	iptables &      2001-     &  2.4 & Rusty Russell \\ [0.5ex]
+	nftables &      2014-     &  3.13 & gli stessi di iptables \\ [0.5ex]
+	eBPF/XDP &     &  \\ \bottomrule
      \end{tabular}  
   \end{table}
 \end{center}
@@ -367,33 +359,107 @@ esterni.
 
 Gli strumenti di debug e log sono molto potenti, e quindi utili: \`e ad
 esempio possibile tracciare l'intero percorso di un singolo pacchetto
-attraverso le regole.
+attraverso le regole.  Esiste anche la funzione di monitor che permette di
+osservare in tempo reale le modifiche alle regole di firewall.
+Molto utile per la gestione è inoltre la possibilità di inserire commenti
+all'interno delle regole, commenti quindi visibili interrogando il kernel e non
+solo osservando il codice originale (che potrebbe nel frattempo essere stato 
+modificato o andato perso).
+
+Ad esempio, cerchiamo tra le regole attualmente in uso quelle che non
+dovrebbero essere usate in produzione:
+\begin{lstlisting}
+# nft list ruleset | grep -w comment.\*DEBUG
+ip saddr @testsources nftrace set 1 comment "DEBUG: XXX remove in production"
+\end{lstlisting}
+
+\section{Packet flow in nftables}
+
+\begin{Verbatim}[fontsize=\scriptsize, fontseries=b, fontfamily=courier, samepage=true]
+    {NETWORK}
+        |
+        |
+        v                   
+    (ingress)               .----> <Local Process> ----.
+        |                   |                          |
+        |                   |                          |
+        |                   |                          |
+   (prerouting)             |                          |
+        |                   |                          |
+        |                   |                          |
+        v                   |                          v
+[Routing Decision] ----> (input)                   (output) ----> [Routing Decision]
+        |                                                                 |
+        |                                                                 |
+        |                                               .-----------------'
+        |                                               |
+        |                                               v
+        '------------------------> (forward) ----> (postrouting)
+                                                        |
+                                                        |
+                                                        |
+                                                        v
+                                                    {NETWORK}
+\end{Verbatim}
+
+Lo schema rappresenta i possibili percorsi di un pacchetto: tra parentesi tonde
+gli hook ai quali si possono agganciare le catene di regole.
 
 La possibilit\`a di intervenire precocemente sul pacchetto, appena passato al
 livello superiore dal driver della scheda di rete, \`e fondamentale per
 gestire attacchi tipo DDoS: questo \`e reso possibile dall'hook ingress che
 interviene prima del prerouting.
 
+I pacchetti che hanno come destinazione qualche processo locale (cioè sono
+indirizzati all'host stesso) sono gestibili tramite l'hook input ed
+analogamente quelli generati da processi locali tramite l'hook output.
+
+Il traffico che deve essere inoltrato fra le due reti viene gestito tramite
+l'hook forward. Il NAT interviene in prerouting (DNAT) e postrouting (SNAT).
+
 Il layout iniziale di nftables \`e semplicemente l'insieme vuoto,
 l'amministratore \`e libero di configurare tavole (table) e catene
 (chain)\footnote{Le tavole sono contenitori di catene che a loro volta
-contengono regole}
-nel modo ritenuto pi\`u adatto al problema da risolvere.
+contengono regole} nel modo ritenuto pi\`u adatto al problema da risolvere.
 
+Nemmeno i contatori sono attivi per default, a differenza di iptables, ma
+devono essere esplicitamente attivati quando necessario, migliorando
+cos\`i le prestazioni. Il fatto di poter indicare pi\`u azioni per una regola
+rende pi\`u consistente e leggibile il codice, con
+iptables spesso è necessario saltare ad un'altra catena contenente le diverse
+azioni. Ad esempio, log e drop con iptables:
 
-Un semplice esempio di configurazione per un server web potrebbe essere
+\begin{lstlisting}
+# iptables -t filter -A OUTPUT -d 10.0.0.1 -j LOG # Log, continue to next rule
+# iptables -t filter -A OUTPUT -d 10.0.0.1 -j DROP # Drops the same packet
+\end{lstlisting}
+oppure 
+\begin{lstlisting}
+# iptables -t filter -N LOGGING # Create non-base chain for logging
+# iptables -t filter -A LOGGING -j LOG # Add rule to logging chain to LOG
+# iptables -t filter -A LOGGING -j DROP # Add rule to logging chain to DROP
+# iptables -t filter -A OUTPUT -d 10.0.0.1 -j LOGGING # Jump LOGGING if match
+\end{lstlisting}
+\noindent con nftables un unica regola:
+\begin{lstlisting}
+# nft add rule ip FILTER OUTPUT ip daddr 10.0.0.1 log drop
+\end{lstlisting}
+
+\noindent Un semplice esempio di configurazione per un server web potrebbe essere
 questo:
 
 \lstinputlisting[caption=Semplice esempio per server web, style=customc]{nftables-web.conf}
 
 \noindent Notare, riga 9, che le connessioni già stabilite o relative a
-connessioni già stabilite, l'informazione è ricavata dalla conntrack table,
+connessioni già stabilite, informazione ricavata dalla conntrack table,
 sono accettate.
 I servizi raggiungibili dall'esterno sono ssh, http e https, tutto il resto
 viene ignorato (drop) senza inviare "ICMP host unreachable". Inoltre i
 pacchetti rifiutati vengono contati (counter).
 
+\begin{minipage}{\linewidth}
 \lstinputlisting[caption=Semplice esempio di router/firewall, style=customc]{nft-simple-forward.nft}
+\end{minipage}
 
 \noindent Questo esempio descrive il comportamento di un semplice
 router/firewall. La tavola è associata ai protocolli IPv4 e IPv6 (inet) e
