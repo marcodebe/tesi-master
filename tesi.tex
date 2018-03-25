@@ -43,67 +43,67 @@ criticit\`a, dovute sostanzialmente al grande numero di regole sui firewall.
 Pur essendo riuscito a risolvere i problemi ho ritenuto di dover considerare
 questi segnali di possibile obsolescenza del sistema, studiando le attuali
 alternative agli strumenti scelti oramai circa 17 anni fa: cio\`e in pratica
-le alternative ad {\em iptables}.  In effetti l'alternativa c'\`e: si chiama
-nftables ed il suo scopo è proprio quello di soppiantare {\em iptables}
+le alternative ad iptables.  In effetti l'alternativa c'\`e: si chiama
+nftables ed il suo scopo è proprio quello di soppiantare iptables
 superandone tutte le limitazioni.
 
-Il progetto di migrazione da {\em iptables} a nftables \`e consistito prima di
+Il progetto di migrazione da iptables a nftables \`e consistito prima di
 tutto nello studio del nuovo sistema, nella riorganizzazione delle regole dei
 due firewall (operazione ancora in corso), e nella preparazione di scenari di
 test usando macchine virtuali.
 
-\chapter{}
-Nel frattempo l'analisi dello stato delle cose del kernel Linux ha evidenziato
-una recente presa di posizione di molti, tra cui importanti sviluppatori e
-aziende, che sostiene l'impossibilit\`a di elim
+%\chapter{}
+%Nel frattempo l'analisi dello stato delle cose del kernel Linux ha evidenziato
+%una recente presa di posizione di molti, tra cui importanti sviluppatori e
+%aziende, che sostiene l'impossibilit\`a di elim
+%
+%Netfilter è un framework implementato da Linux che permette di
+%compiere diverse operazioni relative al traffico di rete: packet-filtering,
+%nat, mangling, etc.
+%
+%I predecessori di iftables sono stati {\em ipfwadm} per i kernel dall'1.2.x (con x>0)
+%al 2.0.x (1995-1999), {\em ipchains} per i kernel 2.2.x (1999-2001).  {\em iptables} è
+%presente dal kernel 2.4.x in poi (2001).
+%
+%L'attuale (2018) kernel è il 4.15.9 e tuttora, su Linux, {\em iptables} è lo
+%strumento di packet-filtering più utilizzato sia come firewall limitato al
+%singolo host, sia per la protezione di sotto-reti e per la realizzazione di
+%diverse soluzioni che richiedano analisi, classificazione, elaborazione e
+%modifica di pacchetti di rete in transito.
+%
+%{\em iptables} è quindi in produzione da cira 17 anni anche se, a partire dalla
+%versione di kernel 3.13 (gennaio 2014
+%https://kernelnewbies.org/Linux\_3.13\#nftables.2C\_the\_successor\_of\_{\em iptables}),
+%Linux offre uno nuovo strumento alternativo ad {\em iptables}: nftables. Nftables
+%appare per la prima volta nel 2009 (https://lwn.net/Articles/564095/) ma il
+%progetto langue fino al 2014 quando torna ad attirare l'attenzione degli
+%sviluppatori interessati a sopperire ai difetti di progettazione e alle carenze
+%di {\em iptables}.
+%
+%{\em iptables} è composto in realtà da un insieme di componenti separate e ognuna di
+%esse ha consapevolezza del singolo protocollo che gestisce ― ipv4, ipv6,
+%Ethernet bridging, ARP - il codice è quindi replicato quattro volte.
+%
+%Questa situazione è frustrante per gli sviluppatori e l'idea di un nuovo
+%sistema di packet filtering unico e /general purpose/ rende accettabile lo
+%sforzo necessario all'introduzione di un'ulteriore macchina virtuale (VM) nel
+%kernel.
+%
+%L'idea di una VM che esegua bytecode nel kernel potrebbe sembrare, dal punto di
+%vista delle prestazioni, un errore; tuttavia ci si rende invece conto che il
+%bytecode può offrire prestazioni migliori del codice che sostituisce.  Inoltre
+%nftables introduce sostanziali miglioramenti rispetto al predecessore.
+%
+%Quel che succede però è che nftables non rimpiazza {\em iptables}: lo affianca.  A
+%differenza dei suoi predecessori non esiste quindi una versione di kernel a
+%partire dalla quale il vecchio sistema non è più supportato.
+%
+%Uno dei motivi, a mio parere uno dei principali, per cui nftables non ha
+%soppiantato da un giorno all'altro {\em iptables} consiste nella vasta adozione di
+%{\em iptables} a tutti i livelli, dai singoli host, ai dispositivi (cosiddetti IoT) e
+%soprattutto nei grandi datacenter (cloud).
 
-Netfilter è un framework implementato da Linux che permette di
-compiere diverse operazioni relative al traffico di rete: packet-filtering,
-nat, mangling, etc.
-
-I predecessori di iftables sono stati {\em ipfwadm} per i kernel dall'1.2.x (con x>0)
-al 2.0.x (1995-1999), {\em ipchains} per i kernel 2.2.x (1999-2001).  {\em iptables} è
-presente dal kernel 2.4.x in poi (2001).
-
-L'attuale (2018) kernel è il 4.15.9 e tuttora, su Linux, {\em iptables} è lo
-strumento di packet-filtering più utilizzato sia come firewall limitato al
-singolo host, sia per la protezione di sotto-reti e per la realizzazione di
-diverse soluzioni che richiedano analisi, classificazione, elaborazione e
-modifica di pacchetti di rete in transito.
-
-{\em iptables} è quindi in produzione da cira 17 anni anche se, a partire dalla
-versione di kernel 3.13 (gennaio 2014
-https://kernelnewbies.org/Linux\_3.13\#nftables.2C\_the\_successor\_of\_{\em iptables}),
-Linux offre uno nuovo strumento alternativo ad {\em iptables}: nftables. Nftables
-appare per la prima volta nel 2009 (https://lwn.net/Articles/564095/) ma il
-progetto langue fino al 2014 quando torna ad attirare l'attenzione degli
-sviluppatori interessati a sopperire ai difetti di progettazione e alle carenze
-di {\em iptables}.
-
-{\em iptables} è composto in realtà da un insieme di componenti separate e ognuna di
-esse ha consapevolezza del singolo protocollo che gestisce ― ipv4, ipv6,
-Ethernet bridging, ARP - il codice è quindi replicato quattro volte.
-
-Questa situazione è frustrante per gli sviluppatori e l'idea di un nuovo
-sistema di packet filtering unico e /general purpose/ rende accettabile lo
-sforzo necessario all'introduzione di un'ulteriore macchina virtuale (VM) nel
-kernel.
-
-L'idea di una VM che esegua bytecode nel kernel potrebbe sembrare, dal punto di
-vista delle prestazioni, un errore; tuttavia ci si rende invece conto che il
-bytecode può offrire prestazioni migliori del codice che sostituisce.  Inoltre
-nftables introduce sostanziali miglioramenti rispetto al predecessore.
-
-Quel che succede però è che nftables non rimpiazza {\em iptables}: lo affianca.  A
-differenza dei suoi predecessori non esiste quindi una versione di kernel a
-partire dalla quale il vecchio sistema non è più supportato.
-
-Uno dei motivi, a mio parere uno dei principali, per cui nftables non ha
-soppiantato da un giorno all'altro {\em iptables} consiste nella vasta adozione di
-{\em iptables} a tutti i livelli, dai singoli host, ai dispositivi (cosiddetti IoT) e
-soprattutto nei grandi datacenter (cloud).
-
-\chapter{Cenni storici}
+\chapter{Packet Filtering in Linux}
 
 \label{Cenni storici} % For referencing the chapter elsewhere, use \ref{Chapter1} 
 
@@ -137,7 +137,7 @@ lavoro di Alan Cox che ne ha fatto il porting da BSD.
 
 Questo codice costituisce la prima versione delle funzionalità di firewall
 all'interno del kernel Linux. Il successivo passo evolutivo, dopo ipfw, è
-stato {\em ipfwadm}, in realtà una riscrittura del corrispondente {\em ipfw}
+stato ipfwadm, in realtà una riscrittura del corrispondente ipfw
 di BSD da parte di Alan Cox e Jos Vos.
 
 Ipfw e ipfwadm consentivano di realizzare funzioni di base di un firewall:
@@ -152,7 +152,7 @@ Ipfw e ipfwadm consentivano di realizzare funzioni di base di un firewall:
 \end{itemize}
 
 A partire dal kernel Linux 2.2 (1999) viene rilasciato un nuovo sistema di packet
-filtering: {\em ipchains}. Ipchains \`e sostanzialmente una completa
+filtering: ipchains. Ipchains \`e sostanzialmente una completa
 riscrittura del codice di ipfw di cui espande le funzionalità.  In particolare
 ipchains gestisce ulteriori protocolli oltre a TCP, UDP e ICMP, ed inoltre è
 in grado di gestire la frammentazione dei pacchetti.
@@ -166,12 +166,12 @@ oco sicura in quanto è facile inviare pacchetti costruiti ad arte per
 superare i filtri del firewall.
 
 Nel kernel 2.4 assistiamo nuovamente ad una completa riscrittura delle
-funzionalità di filtro e firewall di Linux, viene introdotto il framework {\em
-Netfilter} (comunemente noto come iptables).
+funzionalità di filtro e firewall di Linux, viene introdotto il framework 
+Netfilter (comunemente noto come iptables).
 
 Netfilter è molto più maturo rispetto ai suoi predecessori, permette di
 realizzare firewall stateful con maggiori capacità di ispezione dei pacchetti
-e capacità di {\em log}.
+e capacità di log.
 
 Alcune delle caratteristiche di NetFilter sono:
 
@@ -191,7 +191,7 @@ iniziano ad essere sviluppati anche in forma di prodotti commerciali offerti
 da diverse aziende che ne forniscono supporto tecnico.
 
 Il tool di configurazione di NetFilter, che è poi il nome col quale è noto il
-framework stesso, è {\em iptables}.
+framework stesso, è iptables.
 In realtà gli strumenti di configurazione del framework NetFilter formano una
 famiglia: oltre a iptables, che gestisce regole IPv4, esistono ip6tables per
 regole IPV6, ebtables per realizzare firewall layer 2 (Linux bridge)
@@ -199,12 +199,12 @@ e arptables che lavora nello specifico su messaggi ARP.
 
 Ai diversi tool corrispondono, nel kernel, parti di codice ad-hoc per il
 specifico protocollo: IPv4, IPv6, EB, ARP.  A volte si usa anche il termine
-{\em Xtables} per definire l'intero firewall.
+Xtables per definire l'intero firewall.
 
 La possibilità di aggiungere plugin ha fatto s\'i che nel tempo Xtables si
 sia arricchito di molti moduli aggiuntivi.
 
-A partire dal kernel 3.13 (2014) viene introdotto {\em nftables} con l'intento
+A partire dal kernel 3.13 (2014) viene introdotto nftables con l'intento
 di soppiantare iptables.  Il nuovo framework di classificazione di pacchetti
 nasce con lo scopo di superare quelli che vengono considerati difetti o
 carenze di iptables.
@@ -212,27 +212,28 @@ carenze di iptables.
 \begin{figure}[H]
 \begin{center}
       \includegraphics[width=\linewidth]{Netfilter-components.svg.png}
-      \caption{Componenti di Netfilter}
+      \caption[Componenti di Netfilter]{Componenti di Netfilter:\footnotemark}
       \label{fig:netfilter}
 \end{center}
 \end{figure}
+\footnotetext{\href{http://inai.de/images/nf-components.svg}{Sorgente} (CC BY-SA 3.0).}
 
 Dalla figura \ref{fig:netfilter} risulta evidente la maggiore complessità e
 ridondanza di Xtables rispetto a nftables.  Nftables riduce il numero di linee
 di codice nel kernel riorganizzando e unificando quello che in iptables è
 replicato per i diversi protocolli.  Inoltre nftables introduce strutture
-dati, insiemi\footnote{iptables non gestisce nativamente gli insiemi ma esiste
-il tool ipset che fornisce a iptables questa funzionalità}, dizionari e mappe,
+dati, insiemi\footnote{Iptables non gestisce nativamente gli insiemi ma esiste
+il tool ipset che fornisce a iptables questa funzionalità.}, dizionari e mappe,
 che permettono di semplificare e ottimizzano le regole del firewall.
 Migliorano anche la leggibilità delle regole e le prestazioni.
 
 Un'altra caratteristica molto importante consiste nel fatto che con iptables
-ogni regola viene introdotta dal comando {\em iptables} con relativi
+ogni regola viene introdotta dal comando iptables con relativi
 argomenti; nftables invece consiste di un vero e proprio linguaggio nel quale
 viene descritto e configurato l'intero firewall; inoltre le regole vengono
 attivate atomicamente.
 
-\chapter{Linux firewall nella rete Galliera}
+\chapter{Firewall Linux nella rete Galliera}
 \section{Cenni storici}
 
 La LAN dell'ospedale Galliera è collegata ad internet dal 1996 e sin
@@ -255,22 +256,20 @@ masquerading} o SNAT (Source Network Address Translation) degli indirizzi IPv4
 interni (di classe riservata) per l'inoltro del traffico verso internet.
 
 \section{Architettura attuale}
-
 Nel tempo è cresciuto il numero di sottoreti collegate, di servizi esposti e
 di conseguenza la complessità delle regole configurate.
 
-La situazione attuale consiste di due firewall Linux, uno {\em esterno} ed uno
-{\em interno}.  Il firewall esterno regola il traffico tra internet, DMZ e
+La situazione attuale consiste di due firewall Linux, uno esterno ed uno
+interno.  Il firewall esterno regola il traffico tra internet, DMZ e
 reti locali; quello interno regole il traffico tra le reti locali e l'esterno.
 
 \begin{figure}
 \begin{center}
-      \includegraphics[width=\linewidth]{rete.png}
+      \includegraphics[width=.8\linewidth]{net.svg.png}
       \caption{Schema delle reti e dei due firewall}
       \label{fig:rete}
 \end{center}
 \end{figure}
-
 In particolare sul firewall esterno sono presenti regole di tipo blacklist per
 un diversi insiemi di indirizzi, che viene aggiornato
 periodicamente (ogni 5 minuti).  Le liste di indirizzi provengono da:
@@ -282,7 +281,7 @@ periodicamente (ogni 5 minuti).  Le liste di indirizzi provengono da:
     \item \href{https://ransomwaretracker.abuse.ch/downloads/RW\_IPBL.txt}{''Ransomware
     Tracker}\footnote{https://ransomwaretracker.abuse.ch/downloads/RW\_IPBL.txt}
     (circa 400 indirizzi)
-    \item {\em fail2ban} su ssh: blacklist auto-generata in base ai tentativi
+    \item fail2ban su ssh: blacklist auto-generata in base ai tentativi
     falliti di connessione via ssh (circa 9000 indirizzi al momemnto)
     \item lista di indirizzi di botnet autoprodotta da script che analizzano
     tentativi di bruteforce tipicamente su servizi di posta (oltre 12.000
@@ -290,20 +289,21 @@ periodicamente (ogni 5 minuti).  Le liste di indirizzi provengono da:
 \end{itemize}
 Il totale delle regole supera le 20 mila.
 
-Il firewall interno ha la particolarità di dover gestire le regole del {\em
-captive portal}: si tratta di abilitare il traffico verso internet dei
+Il firewall interno ha la particolarità di dover gestire le regole del 
+Captive Portal: si tratta di abilitare il traffico verso internet dei
 dispositivi wireless di coloro che si sono registrati.
+
 Il sistema di abilitazione, da me realizzato con la collaborazione di un collega, agisce
 classificando i pacchetti in base al mac address: i pacchetti con mac adddress
-abilitato vengono inoltrati regolarmente, i rimanenti vengono marcati
-(l'associazione del valore al pacchetto è realizzata all'interno del kernel,
-il pacchetto resta inalterato) e successivamente una regola nella catena di
+abilitato vengono inoltrati regolarmente, i rimanenti vengono marcati%
+\footnote{L'associazione del valore al pacchetto è realizzata all'interno del kernel,
+il pacchetto resta inalterato.} e successivamente una regola nella catena di
 inoltro devia il pacchetto verso il sito del Captive Portal che propone la
 registrazione.
 Abbiamo quasi 100 nuove registrazioni al giorno e sono 100.000 i dispositivi
 che hanno usufruito del servizio a partire dal 2012.
 Non avendo specificato termini di scadenza la lista di mac address non
-decresce mai, ad esempio al momento sono presenti oltre 23 mila indirizzi mac.
+decresce mai, ad esempio al momento sono presenti oltre 23 mila indirizzi ethernet.
 
 \section{Problemi dell'infrastruttura}
 
@@ -311,27 +311,27 @@ Nella sezione precedente ho messo in evidenza le dimensioni degli insiemi di
 indirizzi e le perché proprio la gestione di così tante regole ha, durante il
 2017, portato alla luce alcune carenze della soluzione implementata.
 
-Inizialmente, infatti, per ogni indirizzo era prevista una regola\footnote{di tipo {\em REJECT} per le blacklist e di tipo {\em RETURN} per la
-gestione del wifi free},
-ciò significa che prima di poter classificare ogni singolo pacchetto \`e 
-necessario scorrere una per una migliaia se non decine di migliaia di regole
-(ovviamente non subiscono questa verifica i pacchetti relativi a connessioni
-gi\`a stabilite).  Questo approccio basato su una regola
-per ogni indirizzo risulta essere non efficace, superata una certa
-soglia\footnote{nella configurazione hardware da me utilizzata questo limite
-risultava essere intorno a cira 15 mila regole} risultava evidente il carico
+Inizialmente, infatti, per ogni indirizzo era prevista una regola\footnote{Di
+tipo {\em REJECT} per le blacklist e di tipo {\em RETURN} per la gestione del
+wifi free.}, ciò significa che prima di poter classificare ogni singolo
+pacchetto \`e necessario scorrere una per una migliaia se non decine di
+migliaia di regole (ovviamente non subiscono questa verifica i pacchetti
+relativi a connessioni gi\`a stabilite).  Questo approccio, basato su una regola
+per ogni indirizzo, risulta essere non efficiente, superata una certa
+soglia\footnote{Nella configurazione hardware da me utilizzata questo limite
+risultava essere intorno a cira 15 mila regole.} risultava evidente il carico
 del server Linux tanto che risultavano anche rallentati l'accesso via ssh e
 l'esecuzione di comandi.
 
-Come accennato in precedenza iptables non prevede strutture dati quali i {\em
-set}, ma un framework esterno, {\em ipset}, fornisce questa funzionalità
+Come accennato in precedenza iptables non prevede strutture dati quali gli
+insiemi, ma uno strumento esterno, ipset, fornisce questa funzionalità
 permettendo di ridurre decine di migliaia di regole ad un unica regola (nello
 specifico una regola per ogni insieme).
 
 I problemi dovuti all'eccessivo numero di regole li ho quindi risolti usando
 ipset su entrambe i firewall.  Nel caso del firewall interno è stato anche
-necessario aggiornare il kernel per poter generare set contenenti mac address
-in quanto questa funzionalità non è stata sempre presente.
+necessario aggiornare il kernel ad una versione in grado di gestire insiemi
+contenenti mac address.
 
 L'introduzione di ipset ha richiesto, oltre alla modifica della configurazione
 dei due firewall, anche le revisione del codice del captive portal e dei
@@ -350,8 +350,9 @@ iptables dove ogni regola viene inserita da un commando con relativi
 argomenti.  Ci\`o significa dover riprogrammare tutte le logiche all'interno
 del nuovo framwork.
 
-\section{Confronto tra iptables e nftables}
+\chapter{Nftables}
 
+\section{Caratteristiche di nftables}
 Vediamo quali sono le principali novit\`a introdotte da nftables.
 \begin{itemize}
     \item supporto nativo per dual stack IPv4 e IPv6
@@ -368,8 +369,8 @@ Vediamo quali sono le principali novit\`a introdotte da nftables.
     \item migliori opzioni di gestione dell'insieme di regole, aggiornamenti
     delle regole completamente atomici e incrementali
 \end{itemize}
-
-Si possono quindi inserire regole che valgono contestualemnte per IPv4 e IPv6,
+Si possono quindi inserire regole che valgono contestualemnte sia per IPv4 che
+per IPv6,
 mentre le strutture dati consentono di migliorare le prestazioni e la
 leggibilit\`a delle regole, oltre a non richiedere il supporto di tool
 esterni.
@@ -385,7 +386,7 @@ modificato o andato perso).
 
 Ad esempio, cerchiamo tra le regole attualmente in uso quelle che non
 dovrebbero essere usate in produzione:
-\begin{lstlisting}
+\begin{lstlisting}[style=customb]
 # nft list ruleset | grep -w comment.\*DEBUG
 ip saddr @testsources nftrace set 1 comment "DEBUG: XXX remove in production"
 \end{lstlisting}
@@ -454,7 +455,7 @@ l'hook forward. Il NAT interviene in prerouting (DNAT) e postrouting (SNAT).
 Il layout iniziale di nftables \`e semplicemente l'insieme vuoto,
 l'amministratore \`e libero di configurare tavole (table) e catene
 (chain)\footnote{Le tavole sono contenitori di catene che a loro volta
-contengono regole} nel modo ritenuto pi\`u adatto al problema da risolvere.
+contengono regole.} nel modo ritenuto pi\`u adatto al problema da risolvere.
 
 Nemmeno i contatori sono attivi per default, a differenza di iptables, ma
 devono essere esplicitamente attivati quando necessario, migliorando
@@ -463,39 +464,33 @@ rende pi\`u consistente e leggibile il codice, con
 iptables spesso è necessario saltare ad un'altra catena contenente le diverse
 azioni. Ad esempio, log e drop con iptables:
 
-\begin{lstlisting}
+\begin{lstlisting}[style=customb]
 # iptables -t filter -A OUTPUT -d 10.0.0.1 -j LOG # Log, continue to next rule
 # iptables -t filter -A OUTPUT -d 10.0.0.1 -j DROP # Drops the same packet
 \end{lstlisting}
 oppure 
-\begin{lstlisting}
+\begin{lstlisting}[style=customb]
 # iptables -t filter -N LOGGING # Create non-base chain for logging
 # iptables -t filter -A LOGGING -j LOG # Add rule to logging chain to LOG
 # iptables -t filter -A LOGGING -j DROP # Add rule to logging chain to DROP
 # iptables -t filter -A OUTPUT -d 10.0.0.1 -j LOGGING # Jump LOGGING if match
 \end{lstlisting}
-\noindent con nftables un unica regola:
-\begin{lstlisting}
+con nftables \`e sufficiente una sola regola:
+\begin{lstlisting}[style=customb]
 # nft add rule ip FILTER OUTPUT ip daddr 10.0.0.1 log drop
 \end{lstlisting}
-
-\noindent Un semplice esempio di configurazione per un server web potrebbe essere
+Un semplice esempio di configurazione per un server web potrebbe essere
 questo:
-
 \lstinputlisting[caption=Semplice esempio per server web, style=customc]{nftables-web.conf}
-
-\noindent Notare, riga 9, che le connessioni già stabilite o relative a
+Notare, riga 9, che le connessioni già stabilite o relative a
 connessioni già stabilite, informazione ricavata dalla conntrack table,
 sono accettate.
 I servizi raggiungibili dall'esterno sono ssh, http e https, tutto il resto
 viene ignorato (drop) senza inviare "ICMP host unreachable". Inoltre i
 pacchetti rifiutati vengono contati (counter).
 
-\begin{minipage}{\linewidth}
 \lstinputlisting[caption=Semplice esempio di router/firewall, style=customc]{nft-simple-forward.nft}
-\end{minipage}
-
-\noindent Questo esempio descrive il comportamento di un semplice
+Questo esempio descrive il comportamento di un semplice
 router/firewall. La tavola è associata ai protocolli IPv4 e IPv6 (inet) e
 definisce due insiemi contenenti indirizzi dei due tipi (righe 2 e 7).
 Al solito viene accettato traffico relativo a connessioni attive (riga 13)
@@ -509,8 +504,58 @@ Per ognuna delle categorie sopra elencate viene attivato il contatore.
 %\begin{lstlisting}
 %$ sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 %\end{lstlisting}
-
+\section{Strumenti di debug e tracing}
+Ritengo che il sistema di tracing offerto da nftables sia di ottima qualit\`a;
+\`e fondamentale per la rapida individuazione dei bug durante la
+sperimentazione e lo sviluppo dei ruleset.
+Il tracing viene attivato impostando una metainformazione relativa al pacchetto: nftrace=1.
+\begin{lstlisting}[style=customb]
+# nft add rule filter forward udp dport 53 meta nftrace set 1
+\end{lstlisting}
+Dal momento che transita dalla catena di forward, ogni pacchetto destinato ad un DNS server riporter\`a
+ i dettagli del suo percorso attraverso l'insieme di regole.
+Per osservare il resoconto del viaggio del pacchetto \`e necessario attivare il
+monitor da console e rimanere in ascolto:
+\begin{lstlisting}[style=customb]
+# nft monitor
+\end{lstlisting}
+Questo ad esempio \`e il percorso di un pacchetto destinato ad un DNS server:
+\begin{lstlisting}[style=customb]
+trace id e7d627c0 ip captive forward packet: iif "eth1" oif "eth0" \
+      ether saddr 00:16:3e:05:12:55 ether daddr 00:16:3e:35:e7:80 \
+      ip saddr 193.168.100.159 ip daddr 8.8.8.8 \
+      ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 36018 ip length 59 udp sport 40220 \
+      udp dport domain udp length 39 @th,64,96 49749720051147984142130479104
+trace id e7d627c0 ip captive forward rule udp dport domain nftrace \
+      set 1 (verdict continue)
+trace id e7d627c0 ip captive forward verdict continue
+trace id e7d627c0 ip captive forward
+trace id e7d627c0 ip captive nat_postrouting verdict continue
+trace id e7d627c0 ip captive nat_postrouting
+\end{lstlisting}
+Per osservare il resoconto del viaggio del pacchetto \`e necessario attivare il
+monitor da console e rimanere in ascolto:
+\begin{lstlisting}[style=customb]
+# nft monitor
+nft --debug=netlink add rule ip foo bar ct state new \
+ ip saddr 192.168.0.0-192.168.0.13 tcp dport 22 accept
+ ip foo bar
+ [ ct load state => reg 1 ]
+ [ bitwise reg 1 = (reg=1 & 0x00000008 ) ^ 0x00000000 ]
+ [ cmp neq reg 1 0x00000000 ]
+ [ payload load 4b @ network header + 12 => reg 1 ]
+ [ cmp gte reg 1 0x0000a8c0 ]
+ [ cmp lte reg 1 0x0d00a8c0 ]
+ [ payload load 1b @ network header + 9 => reg 1 ]
+ [ cmp eq reg 1 0x00000006 ]
+ [ payload load 2b @ transport header + 2 => reg 1 ]
+ [ cmp eq reg 1 0x00001600 ]
+ [ immediate reg 0 accept ]
+\end{lstlisting}
 \chapter{Migrazione del Captive Portal}
+
+Il progetto che sto realizzando prevede molte attivit\`a, ad esempio gli
+automatismi di gestione delle regole tramite l'uso di git e Ansible
 
 Per Captive Portal si intende una configurazione della rete in cui il
 dispositivo che si collega la prima volta viene reindirizzato ad una pagina web
@@ -541,10 +586,8 @@ Lo schema di verifica e autorizzazione del traffico è il seguente:
 La configurazione di iptables che realizza quanto descritto sopra è la
 seguente:
 
-\begin{minipage}{\linewidth}
 \lstinputlisting[caption=Mangle per wifi free, style=customc,
 label={lst:iptables-wifi}]{captive-iptables.conf}
-\end{minipage}
 
 \noindent Il listato \ref{lst:iptables-wifi} rappresenta la configurazione del
 firewall limitatamente alle regole strettamente necessarie a realizzare la
@@ -569,9 +612,9 @@ Le prime nove righe sono relative alla marcatura in fase di prerouting:
 La tavola di NAT ha il compito di indirizzare il traffico http verso il sito
 del captive portal.
 Le righe dalla $20$ in poi sono relative all'insieme che contiene i mac
-address autorizzati\footnote{gli indirizzi non sono quelli reali perché anche
+address autorizzati\footnote{Gli indirizzi non sono quelli reali perché anche
 il mac address è un dato personale e agli utenti non è stato notificato un uso
-di questo tipo dei loro dati}, captive\_ok:
+di questo tipo dei loro dati.}, captive\_ok:
 l'intestazione descrive la struttura dati di tipo hash di mac address e a
 seguire sono elencati gli elementi dell'insieme.
 
@@ -579,7 +622,7 @@ seguire sono elencati gli elementi dell'insieme.
 Il porting ad nftables della logica sopra descritta è il seguente:
 \lstinputlisting[caption=Captive portal con nftables, style=customc,
 label={lst:nftables-wifi}]{captive-nftables.conf}
-POssiamo intanto notate due cose:
+Possiamo intanto notare due cose:
 \begin{itemize}
 	\item il linguaggio prevede la definizione di variabili
 	
@@ -588,7 +631,7 @@ POssiamo intanto notate due cose:
 	la priorità definisce quale deve essere l'ordine di consultazione
 \end{itemize}
 L'attivazione di un dispositivo si effettua inserendone il mac address nell'insieme
-captive\_ok\footnote{in questo caso usiamo la sintassi da linea di comando invece che quella strutturata da script}:
+captive\_ok\footnote{In questo caso usiamo la sintassi da linea di comando invece che quella strutturata da script.}:
 \begin{lstlisting}[style=customb]
 # nft add element captive captive_ok {00:16:3e:05:12:55}
 \end{lstlisting}
@@ -664,7 +707,7 @@ Questa caratteristica dei set alleggerisce il lavoro di gestione del sistema, in
 strumenti per eliminare i mac address scaduti.
 \section{Aggiornamento del timeout}
 In realt\`a sarebbe auspicabile un comportamento pi\`u {\em intelligente}: se un utente \`e 
-un ospite frequente\footnote{ad esempio perch\'e dipendente} vorremmo evitare
+un ospite frequente\footnote{Ad esempio perch\'e dipendente.} vorremmo evitare
 di chiedergli la registrazione ogni 15 giorni,
 vogliamo invece far scadere l'autorizzazione 15 giorni dopo l'ultimo utilizzo del servizio.
 Per ottenere ci\`o \`e necessario aggiornare il timeout
@@ -706,23 +749,68 @@ dalla rete wifi (facciamo sempre riferimento allo script
 \begin{lstlisting}[style=customc,firstnumber=18]
     chain forward {
         type filter hook forward priority 0; policy accept;
-        limit rate over 1 mbytes/second drop
+        limit rate over 8 mbytes/second drop
         ct state established,related accept
         mark 0x63 drop
     }
 \end{lstlisting}
 Avendo introdotto la riga 20 imponiamo che il traffico inoltrato non possa
-superare 1 mbytes, i pacchetti in eccesso vengono scartati.
+superare 8 mbytes, i pacchetti in eccesso vengono scartati.
 
 Una configurazione leggermente pi\`u articolata potrebbe dover distinguere e
 trattare differentemente diverse tipologie di traffico. Ad esempio potremmo
-decidere di limitare il download solo per la rete wifi:
-\begin{lstlisting}[style=customc,firstnumber=18]
-ip daddr $WIFINET limit rate over 10 mbytes/second burst 100 mbytes/second drop
+decidere di limitare la banda per il download ma solo per la rete wifi:
+\begin{lstlisting}[style=customc,firstnumber=20]
+        ip daddr $WIFINET limit rate over 6 mbytes/second \
+                     burst 10 mbytes/second drop
 \end{lstlisting}
+L'opzione di burst consente di usufruire di maggiore banda temporaneamente.
 
-%ip daddr $WIFINET meter rate-meter { ip saddr . ip daddr limit rate over 99
-%mbytes/second burst 1000 mbytes/second } counter drop
+Una regola ancora pi\`u raffinata potrebbe essere la seguente dove sfruttiamo
+i meter e la funzione di concatenazione realizzata dalĺ'operatore ".":
+\begin{lstlisting}[style=customc,firstnumber=20]
+        ip daddr $WIFINET meter rate-meter { 
+             ip saddr . ip daddr limit rate over 3 mbytes/second
+             burst 5 mbytes/second } counter drop
+\end{lstlisting}
+In questo caso le limitazioni sono per coppie di indirizzi sorgente e destinazione,
+il punto concatena i due indirizzi generado la chiave dell'elemento nel meter.
 
+\chapter{Strumenti di sviluppo e test}
 
+Per realizzare i test delle regole in un ambiente simulato, ho configurato tre
+server virtuali libvirt+lxc, cio\`e sostanzialmente tre Linux container.  Il
+sistema operativo sia dell'host che dei tre guest \`e Debian 9.4 (stretch) e
+l'hardware consiste di un laptop Intel i5 dual core.
 
+Una delle tre macchine, chiamata fw, simula il firewall tra una LAN e una rete
+pubblica, la seconda, chiamata pc, rappresenta una macchina all'interno della rete
+locale mentre la terza simula un server in internet, chiamato wikipedia.
+
+Lo strato di virtualizzazione della rete \`e quello offerto da libvirt e
+definisce le reti loc e net rispettivamente per la LAN e per internet.
+\begin{figure}[H]
+\begin{center}
+      \includegraphics[width=.7\linewidth]{vnet.svg.png}
+      \caption{Macchine virtuali}
+      \label{fig:vnet}
+\end{center}
+\end{figure}
+In questa configurazione le prestazioni della rete sono state valutate con iperf(1).
+\begin{center}
+  \label{tab:benchmark}
+  \begin{table}[ht]
+    \centering % used for centering table
+      \begin{tabular}{@{}llcc@{}}
+     \toprule
+     {\bf Configurazione} & {\bf iperf} & {\bf wget 4GB} & {\bf }\\ \midrule
+         routing  & 32.6                & 4.5  & \\
+         mark     & 30.3                & 4.4  & \\ [0.5ex]
+         mark-full& 30.2                & 4.4  & \\ [0.5ex]
+          &           &      & \\ \bottomrule
+      \end{tabular}  
+    \caption{Benchmark} % title of Table
+  \end{table}
+\end{center}
+
+%\begin{lstlisting}[style=customb]

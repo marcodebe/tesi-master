@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   class="diagram"
+   version="1.1"
+   height="329"
+   width="576"
+   id="svg1862"
+   sodipodi:docname="vnet.svg"
+   inkscape:export-filename="/home/debe/Documenti/tesi/vnet.svg.png"
+   inkscape:export-xdpi="299"
+   inkscape:export-ydpi="299"
+   inkscape:version="0.92.1 r15371">
+  <metadata
+     id="metadata1868">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs1866" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1260"
+     inkscape:window-height="506"
+     id="namedview1864"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="2.8606164"
+     inkscape:cx="326.97095"
+     inkscape:cy="141.80387"
+     inkscape:window-x="3138"
+     inkscape:window-y="810"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg1862">
+    <sodipodi:guide
+       position="250.12092,209.74501"
+       orientation="1,0"
+       id="guide2015"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="255.36454,261.48211"
+       orientation="0,1"
+       id="guide2017"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="269.87191,250.64528"
+       orientation="1,0"
+       id="guide2019"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="273.36766,237.7984"
+       orientation="0,1"
+       id="guide2021"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <path
+     inkscape:connector-curvature="0"
+     id="path1570"
+     style="fill:none;stroke:#000000"
+     d="m 248,16 h 56" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1572"
+     style="fill:none;stroke:#000000"
+     d="m 232,48 h 56" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1574"
+     style="fill:none;stroke:#000000"
+     d="M 312,64 H 472" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1576"
+     style="fill:none;stroke:#000000"
+     d="m 232,112 h 32" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1578"
+     style="fill:none;stroke:#000000"
+     d="m 264,112 h 24" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1580"
+     style="fill:none;stroke:#000000"
+     d="M 80,176 H 248" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1582"
+     style="fill:none;stroke:#000000"
+     d="m 456,208 h 72" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1584"
+     style="fill:none;stroke:#000000"
+     d="M 24,224 H 64" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1586"
+     style="fill:none;stroke:#000000"
+     d="m 64,224 h 40" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1588"
+     style="fill:none;stroke:#000000"
+     d="M 8,256 H 88" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1590"
+     style="fill:none;stroke:#000000"
+     d="m 456,256 h 72" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1592"
+     style="fill:none;stroke:#000000"
+     d="M 440,288 H 544" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1594"
+     style="fill:none;stroke:#000000"
+     d="M 8,320 H 88" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1596"
+     style="fill:none;stroke:#000000"
+     d="m 480,280 h 24" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1598"
+     style="fill:none;stroke:#000000"
+     d="m 8,256 v 64" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1600"
+     style="fill:none;stroke:#000000"
+     d="m 64,192 v 16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1602"
+     style="fill:none;stroke:#000000"
+     d="m 64,208 v 16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1604"
+     style="fill:none;stroke:#000000"
+     d="m 88,256 v 64" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1606"
+     style="fill:none;stroke:#000000"
+     d="m 104,224 v 64" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1608"
+     style="fill:none;stroke:#000000"
+     d="m 232,48 v 64" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1610"
+     style="fill:none;stroke:#000000"
+     d="m 264,128 v 32" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1612"
+     style="fill:none;stroke:#000000"
+     d="m 288,48 v 64" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1614"
+     style="fill:none;stroke:#000000"
+     d="M 304,16 V 64" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1616"
+     style="fill:none;stroke:#000000"
+     d="M 304,64 V 80" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1618"
+     style="fill:none;stroke:#000000"
+     d="m 456,208 v 48" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1620"
+     style="fill:none;stroke:#000000"
+     d="M 488,80 V 192" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1622"
+     style="fill:none;stroke:#000000"
+     d="m 528,208 v 48" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1624"
+     style="fill:none;stroke:#000000"
+     d="M 8,256 24,224" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1626"
+     style="fill:none;stroke:#000000"
+     d="m 88,256 16,-32" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1628"
+     style="fill:none;stroke:#000000"
+     d="m 88,320 16,-32" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1630"
+     style="fill:none;stroke:#000000"
+     d="M 232,48 248,16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1632"
+     style="fill:none;stroke:#000000"
+     d="M 288,48 304,16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1634"
+     style="fill:none;stroke:#000000"
+     d="M 288,112 304,80" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1636"
+     style="fill:none;stroke:#000000"
+     d="m 440,288 16,-32" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1638"
+     style="fill:none;stroke:#000000"
+     d="m 452,280 8,-16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1640"
+     style="fill:none;stroke:#000000"
+     d="m 460,280 8,-16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1642"
+     style="fill:none;stroke:#000000"
+     d="m 516,264 8,16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1644"
+     style="fill:none;stroke:#000000"
+     d="m 524,264 8,16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1646"
+     style="fill:none;stroke:#000000"
+     d="m 528,256 16,32" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1648"
+     style="fill:none;stroke:#000000"
+     d="m 64,208 v 8" />
+  <polygon
+     id="polygon1650"
+     transform="rotate(90,52,204)"
+     style="fill:#000000"
+     points="60,197.60001 72,192 60,186.39999 " />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1652"
+     style="fill:none;stroke:#000000"
+     d="m 264,120 v 8" />
+  <polygon
+     id="polygon1654"
+     transform="rotate(-90,268,116)"
+     style="fill:#000000"
+     points="260,117.6 272,112 260,106.4 " />
+  <polygon
+     id="polygon1656"
+     transform="rotate(180,308,56)"
+     style="fill:#000000"
+     points="300,53.599998 312,48 300,42.400002 " />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1658"
+     style="fill:none;stroke:#000000"
+     d="m 488,192 v 8" />
+  <polygon
+     id="polygon1660"
+     transform="rotate(90,476,188)"
+     style="fill:#000000"
+     points="484,181.60001 496,176 484,170.39999 " />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1662"
+     style="fill:none;stroke:#000000"
+     d="m 472,64 a 16,16 0 0 1 16,16" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1664"
+     style="fill:none;stroke:#000000"
+     d="M 80,176 A 16,16 0 0 0 64,192" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path1666"
+     style="fill:none;stroke:#000000"
+     d="m 264,160 a 16,16 0 0 1 -16,16" />
+  <text
+     id="text1668"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="312">1</text>
+  <text
+     id="text1670"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="392">.</text>
+  <text
+     id="text1672"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="352">6</text>
+  <text
+     id="text1674"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="52"
+     x="368">N</text>
+  <text
+     id="text1676"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="328">2</text>
+  <text
+     id="text1678"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="432">1</text>
+  <text
+     id="text1680"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="368">.</text>
+  <text
+     id="text1682"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="160">0</text>
+  <text
+     id="text1684"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="448">9</text>
+  <text
+     id="text1686"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="408">1</text>
+  <text
+     id="text1688"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="384">0</text>
+  <text
+     id="text1690"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="164"
+     x="160">t</text>
+  <text
+     id="text1692"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="176">1</text>
+  <text
+     id="text1694"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#aa0000;"
+     y="68"
+     x="272">↗</text>
+  <text
+     id="text1696"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="48">p</text>
+  <text
+     id="text1698"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="464">2</text>
+  <text
+     id="text1700"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="216">4</text>
+  <text
+     id="text1702"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#aa0000;"
+     y="68"
+     x="248">↖</text>
+  <text
+     id="text1704"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="424">6</text>
+  <text
+     id="text1706"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="164"
+     x="176">r</text>
+  <text
+     id="text1708"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#aa0000;"
+     y="96"
+     x="272">↘</text>
+  <text
+     id="text1710"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="64">d</text>
+  <text
+     id="text1712"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="232">/</text>
+  <text
+     id="text1714"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#aa0000;"
+     y="96"
+     x="248">↙</text>
+  <text
+     id="text1716"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="440">2</text>
+  <text
+     id="text1718"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="248">4</text>
+  <text
+     id="text1720"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="80">0</text>
+  <text
+     id="text1722"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="96">1</text>
+  <text
+     id="text1724"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="136">0</text>
+  <text
+     id="text1726"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#aa0000;"
+     y="84"
+     x="264">W</text>
+  <text
+     id="text1728"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="152">2</text>
+  <text
+     id="text1730"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="344">9</text>
+  <text
+     id="text1732"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="192">4</text>
+  <text
+     id="text1734"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="168">1</text>
+  <text
+     id="text1736"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="360">.</text>
+  <text
+     id="text1738"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="320">9</text>
+  <text
+     id="text1740"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="244"
+     x="496">C</text>
+  <text
+     id="text1742"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="400">1</text>
+  <text
+     id="text1744"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="128">1</text>
+  <text
+     id="text1746"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="336">.</text>
+  <text
+     id="text1748"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="416">0</text>
+  <text
+     id="text1750"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="376">1</text>
+  <text
+     id="text1752"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="144">.</text>
+  <text
+     id="text1754"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="456">/</text>
+  <text
+     id="text1756"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="16">W</text>
+  <text
+     id="text1758"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="392">0</text>
+  <text
+     id="text1760"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="184">0</text>
+  <text
+     id="text1762"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="164"
+     x="144">I</text>
+  <text
+     id="text1764"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="56">e</text>
+  <text
+     id="text1766"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="472">4</text>
+  <text
+     id="text1768"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="432">/</text>
+  <text
+     id="text1770"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="32">k</text>
+  <text
+     id="text1772"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="164"
+     x="184">n</text>
+  <text
+     id="text1774"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="200">.</text>
+  <text
+     id="text1776"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="72">i</text>
+  <text
+     id="text1778"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="240">2</text>
+  <text
+     id="text1780"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="448">4</text>
+  <text
+     id="text1782"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="164"
+     x="200">t</text>
+  <text
+     id="text1784"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="104">0</text>
+  <text
+     id="text1786"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="120">1</text>
+  <text
+     id="text1788"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="160">5</text>
+  <text
+     id="text1790"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="352">2</text>
+  <text
+     id="text1792"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="244"
+     x="488">P</text>
+  <text
+     id="text1794"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="176">/</text>
+  <text
+     id="text1796"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="368">1</text>
+  <text
+     id="text1798"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="408">0</text>
+  <text
+     id="text1800"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="384">8</text>
+  <text
+     id="text1802"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="136">0</text>
+  <text
+     id="text1804"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="344">1</text>
+  <text
+     id="text1806"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="52"
+     x="360">A</text>
+  <text
+     id="text1808"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="424">.</text>
+  <text
+     id="text1810"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="152">1</text>
+  <text
+     id="text1812"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="360">0</text>
+  <text
+     id="text1814"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="24">i</text>
+  <text
+     id="text1816"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="440">5</text>
+  <text
+     id="text1818"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="400">.</text>
+  <text
+     id="text1820"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="192">0</text>
+  <text
+     id="text1822"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="164"
+     x="152">n</text>
+  <text
+     id="text1824"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="168">.</text>
+  <text
+     id="text1826"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="40">i</text>
+  <text
+     id="text1828"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="164"
+     x="192">e</text>
+  <text
+     id="text1830"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="84"
+     x="416">9</text>
+  <text
+     id="text1832"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="208">2</text>
+  <text
+     id="text1834"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="164"
+     x="168">e</text>
+  <text
+     id="text1836"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="292"
+     x="80">a</text>
+  <text
+     id="text1838"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="132"
+     x="224">3</text>
+  <text
+     id="text1840"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="72">1</text>
+  <text
+     id="text1842"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="112">.</text>
+  <text
+     id="text1844"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="88">.</text>
+  <text
+     id="text1846"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="128">0</text>
+  <text
+     id="text1848"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#aa0000;"
+     y="84"
+     x="256">F</text>
+  <text
+     id="text1850"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="144">.</text>
+  <text
+     id="text1852"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="336">1</text>
+  <text
+     id="text1854"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="212"
+     x="184">2</text>
+  <text
+     id="text1856"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="196"
+     x="376">6</text>
+  <text
+     id="text1858"
+     style="font-size:12px;font-family:Menlo, 'Lucida Console', monospace;text-anchor:middle;fill:#000000"
+     y="52"
+     x="352">L</text>
+</svg>
