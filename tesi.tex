@@ -211,14 +211,13 @@ carenze di iptables.
 
 \begin{figure}[H]
 \begin{center}
-      \includegraphics[width=\linewidth]{Netfilter-components.svg.png}
-      \caption[Componenti di Netfilter]{Componenti di Netfilter:\footnotemark}
-      \label{fig:netfilter}
+    \includegraphics[width=\linewidth]{Netfilter-components.svg.png}
+    \caption[Componenti di Netfilter]{Componenti di Netfilter:\footnotemark}
+    \label{fig:netfilter}
 \end{center}
 \end{figure}
-\footnotetext{\href{http://inai.de/images/nf-components.svg}{Sorgente} (CC BY-SA 3.0).}
-
 Dalla figura \ref{fig:netfilter} risulta evidente la maggiore complessità e
+\footnotetext{\href{http://inai.de/images/nf-components.svg}{Sorgente} (CC BY-SA 3.0).}%
 ridondanza di Xtables rispetto a nftables.  Nftables riduce il numero di linee
 di codice nel kernel riorganizzando e unificando quello che in iptables è
 replicato per i diversi protocolli.  Inoltre nftables introduce strutture
@@ -260,14 +259,14 @@ Nel tempo è cresciuto il numero di sottoreti collegate, di servizi esposti e
 di conseguenza la complessità delle regole configurate.
 
 La situazione attuale consiste di due firewall Linux, uno esterno ed uno
-interno.  Il firewall esterno regola il traffico tra internet, DMZ e
-reti locali; quello interno regole il traffico tra le reti locali e l'esterno.
+interno.  Il firewall esterno regola il traffico tra internet, DMZ e reti
+locali; quello interno regole il traffico tra le reti locali e l'esterno.
 
 \begin{figure}
 \begin{center}
-      \includegraphics[width=.8\linewidth]{net.svg.png}
-      \caption{Schema delle reti e dei due firewall}
-      \label{fig:rete}
+    \includegraphics[width=\linewidth]{net.svg.png}
+    \caption{Schema (semplificato) delle reti e dei due firewall}
+    \label{fig:rete}
 \end{center}
 \end{figure}
 In particolare sul firewall esterno sono presenti regole di tipo blacklist per
@@ -301,9 +300,10 @@ il pacchetto resta inalterato.} e successivamente una regola nella catena di
 inoltro devia il pacchetto verso il sito del Captive Portal che propone la
 registrazione.
 Abbiamo quasi 100 nuove registrazioni al giorno e sono 100.000 i dispositivi
-che hanno usufruito del servizio a partire dal 2012.
-Non avendo specificato termini di scadenza la lista di mac address non
-decresce mai, ad esempio al momento sono presenti oltre 23 mila indirizzi ethernet.
+che hanno usufruito del servizio a partire dal 2012.  Non avendo specificato
+termini di scadenza la lista di mac address non decresce mai, ad esempio al
+momento sono presenti oltre 23 mila indirizzi ethernet.  Di tanto in tanto si
+eseguono interventi di cancellazione delle autorizzazioni pi\`u vecchie.
 
 \section{Problemi dell'infrastruttura}
 
@@ -312,7 +312,7 @@ indirizzi e le perché proprio la gestione di così tante regole ha, durante il
 2017, portato alla luce alcune carenze della soluzione implementata.
 
 Inizialmente, infatti, per ogni indirizzo era prevista una regola\footnote{Di
-tipo {\em REJECT} per le blacklist e di tipo {\em RETURN} per la gestione del
+tipo {\em REJECT} per le blacklist e di tipo {\em RETURN} per la gestione della rete
 wifi free.}, ciò significa che prima di poter classificare ogni singolo
 pacchetto \`e necessario scorrere una per una migliaia se non decine di
 migliaia di regole (ovviamente non subiscono questa verifica i pacchetti
@@ -399,47 +399,19 @@ ip saddr @testsources nftrace set 1 comment "DEBUG: XXX remove in production"
     \caption{Schema del flusso di pacchetti in ftables}
     \label{fig:flow}
 \end{figure}
-
-%\begin{Verbatim}[fontsize=\scriptsize, fontseries=b, fontfamily=courier, samepage=false]
-%    {NETWORK}
-%        |
-%        |
-%        v                   
-%    (ingress)               .----> <Local Process> ----.
-%        |                   |                          |
-%        |                   |                          |
-%        |                   |                          |
-%   (prerouting)             |                          |
-%        |                   |                          |
-%        |                   |                          |
-%        v                   |                          v
-%[Routing Decision] ----> (input)                   (output) ----> [Routing Decision]
-%        |                                                                 |
-%        |                                                                 |
-%        |                                               .-----------------'
-%        |                                               |
-%        |                                               v
-%        '------------------------> (forward) ----> (postrouting)
-%                                                        |
-%                                                        |
-%                                                        |
-%                                                        v
-%                                                    {NETWORK}
-%\end{Verbatim}
-
 Lo schema rappresenta i possibili percorsi di un pacchetto: l'asterisco
 evidenzia gli hook ai quali si possono associare le catene contenenti le
 regole:
 \begin{itemize}
-  \item ingress
-  \item prerouting
-  \item input
-  \item output
-  \item forwarding
-  \item output
-  \item postrouting
+    \item ingress
+    \item prerouting
+    \item input
+    \item output
+    \item forwarding
+    \item output
+    \item postrouting
 \end{itemize}
-\noindent La possibilit\`a di intervenire precocemente sul pacchetto, appena
+La possibilit\`a di intervenire precocemente sul pacchetto, appena
 il driver dell scheda di rete lo passa al livello superiore, \`e fondamentale
 per gestire attacchi tipo DDoS o comunque per scartare traffico non gradito
 senza appesantire il lavoro del kernel: questo \`e reso possibile dall'hook
@@ -515,12 +487,11 @@ Il tracing viene attivato impostando una metainformazione relativa al pacchetto:
 Dal momento che transita dalla catena di forward, ogni pacchetto destinato ad un DNS server riporter\`a
  i dettagli del suo percorso attraverso l'insieme di regole.
 Per osservare il resoconto del viaggio del pacchetto \`e necessario attivare il
-monitor da console e rimanere in ascolto:
-\begin{lstlisting}[style=customb]
-# nft monitor
-\end{lstlisting}
+monitor da console: i pacchetti con nftrace settato invieranno al monitor le informazioni
+con tutti i dettagli relativi al percorso seguito.
 Questo ad esempio \`e il percorso di un pacchetto destinato ad un DNS server:
 \begin{lstlisting}[style=customb]
+# nft monitor
 trace id e7d627c0 ip captive forward packet: iif "eth1" oif "eth0" \
       ether saddr 00:16:3e:05:12:55 ether daddr 00:16:3e:35:e7:80 \
       ip saddr 193.168.100.159 ip daddr 8.8.8.8 \
@@ -532,25 +503,6 @@ trace id e7d627c0 ip captive forward verdict continue
 trace id e7d627c0 ip captive forward
 trace id e7d627c0 ip captive nat_postrouting verdict continue
 trace id e7d627c0 ip captive nat_postrouting
-\end{lstlisting}
-Per osservare il resoconto del viaggio del pacchetto \`e necessario attivare il
-monitor da console e rimanere in ascolto:
-\begin{lstlisting}[style=customb]
-# nft monitor
-nft --debug=netlink add rule ip foo bar ct state new \
- ip saddr 192.168.0.0-192.168.0.13 tcp dport 22 accept
- ip foo bar
- [ ct load state => reg 1 ]
- [ bitwise reg 1 = (reg=1 & 0x00000008 ) ^ 0x00000000 ]
- [ cmp neq reg 1 0x00000000 ]
- [ payload load 4b @ network header + 12 => reg 1 ]
- [ cmp gte reg 1 0x0000a8c0 ]
- [ cmp lte reg 1 0x0d00a8c0 ]
- [ payload load 1b @ network header + 9 => reg 1 ]
- [ cmp eq reg 1 0x00000006 ]
- [ payload load 2b @ transport header + 2 => reg 1 ]
- [ cmp eq reg 1 0x00001600 ]
- [ immediate reg 0 accept ]
 \end{lstlisting}
 \chapter{Migrazione del Captive Portal}
 
@@ -637,10 +589,13 @@ captive\_ok\footnote{In questo caso usiamo la sintassi da linea di comando invec
 \end{lstlisting}
 
 \section{Autorizzazioni temporizzate}
+
 Possiamo ora sfruttare funzionalità spcifiche di nftables.  Vogliamo che
 l'autorizzazione all'uso della rete wifi scada dopo 15 giorni.  Per fare ciò
-dobbiamo modificare la definizione del set, alla riga 5 del listato,
-introducendo un timeout \ref{lst:nftables-wifi} in questo modo:
+dobbiamo modificare la definizione del set, alla riga 5 del listato
+\ref{lst:nftables-wifi}, introducendo un timeout\footnote{Al momento \`e aperto
+un bug report perch\'e non si riescono ad impostare timeout > 24d20h31m23s:
+\url{https://bugzilla.netfilter.org/show\_bug.cgi?id=1237}} in questo modo:
 \begin{lstlisting}[style=customb]
 set captive_ok { type ether_addr\; timeout 15d\; }
 \end{lstlisting}
@@ -744,8 +699,8 @@ risulta anche semplice da implementare in quanto anche in questo caso si integra
 linguaggio di definizione delle regole.
 
 Il caso pi\`u semplice consiste nel limitare la banda occupata globalmente
-dalla rete wifi (facciamo sempre riferimento allo script
-\ref{lst:nftables-wifi}):
+dalla rete wifi (facciamo sempre riferimento allo script \ref{lst:nftables-wifi}):
+
 \begin{lstlisting}[style=customc,firstnumber=18]
     chain forward {
         type filter hook forward priority 0; policy accept;
@@ -813,4 +768,22 @@ In questa configurazione le prestazioni della rete sono state valutate con iperf
   \end{table}
 \end{center}
 
+Volendo 
+\begin{lstlisting}[style=customb]
+# nft monitor
+nft --debug=netlink add rule ip foo bar ct state new \
+ ip saddr 192.168.0.0-192.168.0.13 tcp dport 22 accept
+ ip foo bar
+ [ ct load state => reg 1 ]
+ [ bitwise reg 1 = (reg=1 & 0x00000008 ) ^ 0x00000000 ]
+ [ cmp neq reg 1 0x00000000 ]
+ [ payload load 4b @ network header + 12 => reg 1 ]
+ [ cmp gte reg 1 0x0000a8c0 ]
+ [ cmp lte reg 1 0x0d00a8c0 ]
+ [ payload load 1b @ network header + 9 => reg 1 ]
+ [ cmp eq reg 1 0x00000006 ]
+ [ payload load 2b @ transport header + 2 => reg 1 ]
+ [ cmp eq reg 1 0x00001600 ]
+ [ immediate reg 0 accept ]
+\end{lstlisting}
 %\begin{lstlisting}[style=customb]
