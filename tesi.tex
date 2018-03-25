@@ -288,21 +288,20 @@ periodicamente (ogni 5 minuti).  Le liste di indirizzi provengono da:
     tentativi di bruteforce tipicamente su servizi di posta (oltre 12.000
     indirizzi)
 \end{itemize}
- 
-\noindent Il totale delle regole supera le 20 mila.
+Il totale delle regole supera le 20 mila.
 
 Il firewall interno ha la particolarità di dover gestire le regole del {\em
 captive portal}: si tratta di abilitare il traffico verso internet dei
-dispositivi wireless di coloro che si sono autenticati fornando il numero di
-telefono e ricevendo un codice di accesso via SMS.  Il sistema di
-abilitazione, da me realizzato con la collaborazione di un collega, agisce
+dispositivi wireless di coloro che si sono registrati.
+Il sistema di abilitazione, da me realizzato con la collaborazione di un collega, agisce
 classificando i pacchetti in base al mac address: i pacchetti con mac adddress
 abilitato vengono inoltrati regolarmente, i rimanenti vengono marcati
 (l'associazione del valore al pacchetto è realizzata all'interno del kernel,
 il pacchetto resta inalterato) e successivamente una regola nella catena di
-inoltro devia il pacchetto verso il sito del captive portal che propone la
+inoltro devia il pacchetto verso il sito del Captive Portal che propone la
 registrazione.
-
+Abbiamo quasi 100 nuove registrazioni al giorno e sono 100.000 i dispositivi
+che hanno usufruito del servizio a partire dal 2012.
 Non avendo specificato termini di scadenza la lista di mac address non
 decresce mai, ad esempio al momento sono presenti oltre 23 mila indirizzi mac.
 
@@ -312,12 +311,12 @@ Nella sezione precedente ho messo in evidenza le dimensioni degli insiemi di
 indirizzi e le perché proprio la gestione di così tante regole ha, durante il
 2017, portato alla luce alcune carenze della soluzione implementata.
 
-Inizialmente, infatti, per ogni indirizzo era prevista una regola
-\footnote{di tipo {\em REJECT} per le blacklist e di tipo {\em RETURN} per la
+Inizialmente, infatti, per ogni indirizzo era prevista una regola\footnote{di tipo {\em REJECT} per le blacklist e di tipo {\em RETURN} per la
 gestione del wifi free},
-ciò significa che prima di poter classificare ogni singolo pacchetto,
-a parte ovviamente quelli subito accettati in virtù di regole relative a
-traffico {\em REALTED/ESTABLISHED}.  Questo approccio basato su una regola
+ciò significa che prima di poter classificare ogni singolo pacchetto \`e 
+necessario scorrere una per una migliaia se non decine di migliaia di regole
+(ovviamente non subiscono questa verifica i pacchetti relativi a connessioni
+gi\`a stabilite).  Questo approccio basato su una regola
 per ogni indirizzo risulta essere non efficace, superata una certa
 soglia\footnote{nella configurazione hardware da me utilizzata questo limite
 risultava essere intorno a cira 15 mila regole} risultava evidente il carico
@@ -357,7 +356,7 @@ Vediamo quali sono le principali novit\`a introdotte da nftables.
 \begin{itemize}
     \item supporto nativo per dual stack IPv4 e IPv6
     \item supporto nativo per strutture dati (importanti per le prestazioni):
-    set, mappe, dizionari e concatenazioni
+    insiemi, mappe, dizionari e concatenazioni
     \item strumenti di debug e report decisamente migliori
     \item aggiunta dell'hook ingress per migliorare le prestazioni
     \item layout di regole flessibile, partendo da un insieme vuoto, rispetto
@@ -440,9 +439,10 @@ regole:
   \item postrouting
 \end{itemize}
 \noindent La possibilit\`a di intervenire precocemente sul pacchetto, appena
-passato al livello superiore dal driver della scheda di rete, \`e fondamentale
-per gestire attacchi tipo DDoS: questo \`e reso possibile dall'hook ingress
-che interviene prima del prerouting.
+il driver dell scheda di rete lo passa al livello superiore, \`e fondamentale
+per gestire attacchi tipo DDoS o comunque per scartare traffico non gradito
+senza appesantire il lavoro del kernel: questo \`e reso possibile dall'hook
+ingress che interviene prima del prerouting.
 
 I pacchetti che destinati a qualche processo locale (cioè sono indirizzati
 all'host stesso) sono gestiti tramite l'hook input ed analogamente quelli
@@ -510,9 +510,19 @@ Per ognuna delle categorie sopra elencate viene attivato il contatore.
 %$ sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 %\end{lstlisting}
 
-\chapter{Migrazione Captive Portal}
+\chapter{Migrazione del Captive Portal}
 
-Lo schema di identificazione ed autorizzazione è il seguente:
+Per Captive Portal si intende una configurazione della rete in cui il
+dispositivo che si collega la prima volta viene reindirizzato ad una pagina web
+tramite la quale si identifica ottenendo l'autorizzazione all'uso della rete.
+
+Nel nostro caso l'identificazione avviene fornendo il numero di cellulare al
+quale viene inviato un codice via SMS. L'utente restituisce questo codice
+attraverso la stessa pagina del Captive Portal e cos\`i facendo il dispositivo
+viene autorizzato: il mac address viene aggiunto dinamicamente tra quelli
+che il firewall non deve bloccare.
+
+Lo schema di verifica e autorizzazione del traffico è il seguente:
 \begin{enumerate}
     \item il pacchetto viene analizzato per verificare se il mac
     address è stato autorizzato
@@ -527,12 +537,7 @@ Lo schema di identificazione ed autorizzazione è il seguente:
     pacchetto viene scartato in fase di forwarding
 \end{enumerate}
 
-La pagina web del captive porta chiede all'utente di inserire un numero di
-cellulare in suo possesso al quale invia un codice OTP via SMS. Quando
-l'utente dimostra, inviandolo (POST), di essere a conoscenza del codice, il
-sistema registra il suo mac address fra quelli autorizzati e salva in un
-database sqlite l'associazione (mac address, numero di telefono).
-
+\section{Captive Portal con iptables}
 La configurazione di iptables che realizza quanto descritto sopra è la
 seguente:
 
@@ -558,22 +563,166 @@ Le prime nove righe sono relative alla marcatura in fase di prerouting:
   La tavola filter, riga 11:
   \begin{itemize}[itemindent=2em]
       \item[(riga 12)] di default scarta i pacchetti che non soddisfano una delle regole
-      \item[(riga 13)] accetta il traffico relativo a connessioni già attiv
+      \item[(riga 13)] accetta il traffico relativo a connessioni già attivo
       \item[(riga 14)] scarta i pacchetti marcati con il valore 0x63
 \end{itemize}
 La tavola di NAT ha il compito di indirizzare il traffico http verso il sito
 del captive portal.
-
 Le righe dalla $20$ in poi sono relative all'insieme che contiene i mac
 address autorizzati\footnote{gli indirizzi non sono quelli reali perché anche
 il mac address è un dato personale e agli utenti non è stato notificato un uso
-di questo tipo dei loro dati}: captive\_ok.
-L'intestazione descrive la struttura dati di tipo hash di mac address, a
-seguire tutti gli elementi dell'insieme.
+di questo tipo dei loro dati}, captive\_ok:
+l'intestazione descrive la struttura dati di tipo hash di mac address e a
+seguire sono elencati gli elementi dell'insieme.
 
-Il porting di questa logica a nftables è la seguente:
+\section{Captive Portal nella versione nftables}
+Il porting ad nftables della logica sopra descritta è il seguente:
 \lstinputlisting[caption=Captive portal con nftables, style=customc,
 label={lst:nftables-wifi}]{captive-nftables.conf}
+POssiamo intanto notate due cose:
+\begin{itemize}
+	\item il linguaggio prevede la definizione di variabili
+	
+	\item le due chain filter\_prerouting e nat\_prerouting sono di tipo diverso
+	(cioè eseguono azioni diverse) ma sono agganciate allo stesso hook (prerouting),
+	la priorità definisce quale deve essere l'ordine di consultazione
+\end{itemize}
+L'attivazione di un dispositivo si effettua inserendone il mac address nell'insieme
+captive\_ok\footnote{in questo caso usiamo la sintassi da linea di comando invece che quella strutturata da script}:
+\begin{lstlisting}[style=customb]
+# nft add element captive captive_ok {00:16:3e:05:12:55}
+\end{lstlisting}
+
+\section{Autorizzazioni temporizzate}
+Possiamo ora sfruttare funzionalità spcifiche di nftables.  Vogliamo che
+l'autorizzazione all'uso della rete wifi scada dopo 15 giorni.  Per fare ciò
+dobbiamo modificare la definizione del set, alla riga 5 del listato,
+introducendo un timeout \ref{lst:nftables-wifi} in questo modo:
+\begin{lstlisting}[style=customb]
+set captive_ok { type ether_addr\; timeout 15d\; }
+\end{lstlisting}
+Ora ogni elemento inserito nell'insieme verrà automaticamente eliminato dopo 15
+giorni e sarà possibile verificare in ogni momento quanto tempo resta prima
+della scadenza:
+\begin{lstlisting}[style=customb]
+# nft add set captive captive_ok_timeout { type ether_addr\; timeout 15d\; }
+# nft list set captive captive_ok_timeout
+table ip captive {
+        set captive_ok_timeout {
+                type ether_addr
+                timeout 15d
+        }
+}
+# nft add element captive captive_ok_timeout {6c:0b:84:91:7d:a4}
+# sleep 5 && nft list set captive captive_ok_timeoulat
+table ip captive {
+        set captive_ok_timeout {
+                type ether_addr
+                timeout 15d
+                elements = { 6c:0b:84:91:7d:a4 expires 14d23h59m54s }
+        }
+}
+\end{lstlisting}
+Ovviamente un elemento inserito successivamente avrà il proprio timer:
+\begin{lstlisting}[style=customb]
+# nft add element captive captive_ok_timeout {02:0a:76:09:41:8b}
+# nft list set captive captive_ok_timeout
+table ip captive {
+        set captive_ok_timeout {
+                type ether_addr
+                timeout 15d
+                elements = { 02:0a:76:09:41:8b expires 14d23h59m57s,
+                             6c:0b:84:91:7d:a4 expires 14d23h56m4s }
+        }
+}
+\end{lstlisting}
+Alternativamente o in aggiunta al timeout di default, è possibile definire un set in cui ogni elemento può essere esplicitamente dichiarato con il proprio timeout:
+\begin{lstlisting}[style=customb]
+# nft add set captive captive_ok_timeout_flag { \
+                 type ether_addr\; flags timeout\; timeout 15d\; }
+# nft add element captive captive_ok_timeout_flag {02:0a:76:09:41:8b}
+root@fw:~/conf# nft list set captive captive_ok_timeout_flag
+table ip captive {
+        set captive_ok_timeout_flag {
+                type ether_addr
+                timeout 15d
+                elements = { 02:0a:76:09:41:8b expires 14d23h59m57s }
+        }
+}
+# nft add element captive captive_ok_timeout_flag {02:0a:88:01:c3:51 timeout 42m}
+# nft list set captive captive_ok_timeout_flag
+table ip captive {
+        set captive_ok_timeout_flag {
+                type ether_addr
+                timeout 15d
+                elements = { 02:0a:76:09:41:8b expires 14d23h58m51s,
+                             02:0a:88:01:c3:51 timeout 42m expires 41m58s }
+        }
+}
+\end{lstlisting}
+Questa caratteristica dei set alleggerisce il lavoro di gestione del sistema, in quanto non è necessario intervenire con altri
+strumenti per eliminare i mac address scaduti.
+\section{Aggiornamento del timeout}
+In realt\`a sarebbe auspicabile un comportamento pi\`u {\em intelligente}: se un utente \`e 
+un ospite frequente\footnote{ad esempio perch\'e dipendente} vorremmo evitare
+di chiedergli la registrazione ogni 15 giorni,
+vogliamo invece far scadere l'autorizzazione 15 giorni dopo l'ultimo utilizzo del servizio.
+Per ottenere ci\`o \`e necessario aggiornare il timeout
+ogni volta che si osserva transitare un pacchetto generato dal singolo client.
+
+Nftables consente di agire sui set aggiornandoli dinamicamente in funzione del
+percorso del pacchetto ed \`e proprio questa la funzionalit\`a che ci serve.
+Riscriviamo quindi le regole dello script \ref{lst:nftables-wifi} cos\`i:
+
+\noindent\ldots
+\begin{lstlisting}[style=customc,firstnumber=6]
+    chain filter_prerouting {
+        type filter hook prerouting priority 0; policy accept;
+        ip saddr $WIFINET ether saddr @captive_ok set update ether saddr \
+                                                         timeout 15d @captive_ok return
+        ip saddr $WIFINET mark set 0x63
+    }
+\end{lstlisting}
+\noindent\ldots
+
+\noindent La riga numero 8 del listato \ref{lst:nftables-wifi} adesso, non solo ritorna,
+di fatto autorizzando il pacchetto, ma contestualmente aggiorna l'elemento
+nell'insieme, reimpostandone la validit\`a a 15 giorni.
+
+Questa funzionalit\`a realizzata a livello applicativo avrebbe significato
+doversi confrontare con almeno tre domini diversi: le regole del firewall, il
+database delle autorizzazioni e i log. La soluzione sarebbe sicuramente di non
+facile realizzazione, soggetta a difetti e comunque difficile da monitorere e
+debuggare.
+\section{Limitazione della banda}
+Potrebbe essere utile imporre dei limiti di banda utilizzata da parte degli
+utenti della rete wifi. Anche in questo caso nftables offre una soluzione che
+risulta anche semplice da implementare in quanto anche in questo caso si integra in modo naturale nel
+linguaggio di definizione delle regole.
+
+Il caso pi\`u semplice consiste nel limitare la banda occupata globalmente
+dalla rete wifi (facciamo sempre riferimento allo script
+\ref{lst:nftables-wifi}):
+\begin{lstlisting}[style=customc,firstnumber=18]
+    chain forward {
+        type filter hook forward priority 0; policy accept;
+        limit rate over 1 mbytes/second drop
+        ct state established,related accept
+        mark 0x63 drop
+    }
+\end{lstlisting}
+Avendo introdotto la riga 20 imponiamo che il traffico inoltrato non possa
+superare 1 mbytes, i pacchetti in eccesso vengono scartati.
+
+Una configurazione leggermente pi\`u articolata potrebbe dover distinguere e
+trattare differentemente diverse tipologie di traffico. Ad esempio potremmo
+decidere di limitare il download solo per la rete wifi:
+\begin{lstlisting}[style=customc,firstnumber=18]
+ip daddr $WIFINET limit rate over 10 mbytes/second burst 100 mbytes/second drop
+\end{lstlisting}
+
+%ip daddr $WIFINET meter rate-meter { ip saddr . ip daddr limit rate over 99
+%mbytes/second burst 1000 mbytes/second } counter drop
 
 
 
