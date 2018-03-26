@@ -311,22 +311,21 @@ Nella sezione precedente ho messo in evidenza le dimensioni degli insiemi di
 indirizzi e le perché proprio la gestione di così tante regole ha, durante il
 2017, portato alla luce alcune carenze della soluzione implementata.
 
-Inizialmente, infatti, per ogni indirizzo era prevista una regola\footnote{Di
-tipo {\em REJECT} per le blacklist e di tipo {\em RETURN} per la gestione della rete
-wifi free.}, ciò significa che prima di poter classificare ogni singolo
-pacchetto \`e necessario scorrere una per una migliaia se non decine di
-migliaia di regole (ovviamente non subiscono questa verifica i pacchetti
-relativi a connessioni gi\`a stabilite).  Questo approccio, basato su una regola
-per ogni indirizzo, risulta essere non efficiente, superata una certa
-soglia\footnote{Nella configurazione hardware da me utilizzata questo limite
-risultava essere intorno a cira 15 mila regole.} risultava evidente il carico
-del server Linux tanto che risultavano anche rallentati l'accesso via ssh e
-l'esecuzione di comandi.
+Inizialmente per ogni indirizzo era prevista una regola\footnote{Di tipo {\em
+REJECT} per le blacklist e di tipo {\em RETURN} per la gestione della rete wifi
+free.}, ciò significa che prima di poter classificare ogni singolo pacchetto
+\`e necessario scorrere una per una migliaia, se non decine di migliaia, di
+regole (ovviamente non subiscono questa verifica i pacchetti relativi a
+connessioni gi\`a stabilite).  Questo approccio non risulta essere efficiente,
+superata una certa soglia\footnote{Nella attuale configurazione hardware
+questo limite \`e di circa 15 mila regole.}
+risultava evidente il carico del server tanto da rendere difficoltoso anche
+l'accesso via ssh e l'esecuzione di comandi.
 
 Come accennato in precedenza iptables non prevede strutture dati quali gli
-insiemi, ma uno strumento esterno, ipset, fornisce questa funzionalità
-permettendo di ridurre decine di migliaia di regole ad un unica regola (nello
-specifico una regola per ogni insieme).
+insiemi; esiste per\`o uno strumento esterno, ipset, che fornisce questa
+funzionalità permettendo di ridurre decine di migliaia di regole ad un unica
+regola (nello specifico una regola per ogni insieme).
 
 I problemi dovuti all'eccessivo numero di regole li ho quindi risolti usando
 ipset su entrambe i firewall.  Nel caso del firewall interno è stato anche
@@ -411,11 +410,13 @@ regole:
     \item output
     \item postrouting
 \end{itemize}
-La possibilit\`a di intervenire precocemente sul pacchetto, appena
-il driver dell scheda di rete lo passa al livello superiore, \`e fondamentale
-per gestire attacchi tipo DDoS o comunque per scartare traffico non gradito
-senza appesantire il lavoro del kernel: questo \`e reso possibile dall'hook
-ingress che interviene prima del prerouting.
+La possibilit\`a di intervenire precocemente sul pacchetto, appena il driver
+dell scheda di rete lo passa al livello superiore, \`e fondamentale per gestire
+attacchi tipo DDoS o comunque per scartare traffico non gradito senza
+appesantire il lavoro del kernel: questo \`e reso possibile dall'hook ingress
+che interviene prima del prerouting. Catene associate all'hook ingress sono
+definite in tavole della famiglia netdev e scartare i pacchetti a questo
+livello \`e due volte pi\`u efficiente rispetto al classico drop in prerouting.
 
 I pacchetti che destinati a qualche processo locale (cioè sono indirizzati
 all'host stesso) sono gestiti tramite l'hook input ed analogamente quelli
@@ -452,7 +453,7 @@ con nftables \`e sufficiente una sola regola:
 # nft add rule ip FILTER OUTPUT ip daddr 10.0.0.1 log drop
 \end{lstlisting}
 Un semplice esempio di configurazione per un server web potrebbe essere
-questo:
+il seguente:
 \lstinputlisting[caption=Semplice esempio per server web, style=customc]{nftables-web.conf}
 Notare, riga 9, che le connessioni già stabilite o relative a
 connessioni già stabilite, informazione ricavata dalla conntrack table,
@@ -466,16 +467,13 @@ Questo esempio descrive il comportamento di un semplice
 router/firewall. La tavola è associata ai protocolli IPv4 e IPv6 (inet) e
 definisce due insiemi contenenti indirizzi dei due tipi (righe 2 e 7).
 Al solito viene accettato traffico relativo a connessioni attive (riga 13)
-mentre viene ignorato traffico non valido (causato da stealth port scan o da
-problemi nella conntrack table o da cause benigne).
+mentre viene ignorato traffico non valido (causato da stealth port scan, da
+problemi nella conntrack table o da anomalie benigne).
 Oltre ad accettare connessioni verso qualsiasi server ssh e http(s), un
 verdetto positivo è previsto anche per qualsiasi connessione verso i server
-elencati ei due set.
+elencati ei due insiemi my\_ipv4\_addrs e my\_ipv6\_addrs.
 Per ognuna delle categorie sopra elencate viene attivato il contatore.
 
-%\begin{lstlisting}
-%$ sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-%\end{lstlisting}
 \section{Strumenti di debug e tracing}
 Ritengo che il sistema di tracing offerto da nftables sia di ottima qualit\`a;
 \`e fondamentale per la rapida individuazione dei bug durante la
@@ -485,7 +483,7 @@ Il tracing viene attivato impostando una metainformazione relativa al pacchetto:
 # nft add rule filter forward udp dport 53 meta nftrace set 1
 \end{lstlisting}
 Dal momento che transita dalla catena di forward, ogni pacchetto destinato ad un DNS server riporter\`a
- i dettagli del suo percorso attraverso l'insieme di regole.
+i dettagli del suo percorso attraverso l'insieme di regole.
 Per osservare il resoconto del viaggio del pacchetto \`e necessario attivare il
 monitor da console: i pacchetti con nftrace settato invieranno al monitor le informazioni
 con tutti i dettagli relativi al percorso seguito.
@@ -504,10 +502,11 @@ trace id e7d627c0 ip captive forward
 trace id e7d627c0 ip captive nat_postrouting verdict continue
 trace id e7d627c0 ip captive nat_postrouting
 \end{lstlisting}
+
 \chapter{Migrazione del Captive Portal}
 
-Il progetto che sto realizzando prevede molte attivit\`a, ad esempio gli
-automatismi di gestione delle regole tramite l'uso di git e Ansible
+%Il progetto che sto realizzando prevede molte attivit\`a, ad esempio gli
+%automatismi di gestione delle regole tramite l'uso di git e Ansible.
 
 Per Captive Portal si intende una configurazione della rete in cui il
 dispositivo che si collega la prima volta viene reindirizzato ad una pagina web
@@ -537,11 +536,9 @@ Lo schema di verifica e autorizzazione del traffico è il seguente:
 \section{Captive Portal con iptables}
 La configurazione di iptables che realizza quanto descritto sopra è la
 seguente:
-
 \lstinputlisting[caption=Mangle per wifi free, style=customc,
 label={lst:iptables-wifi}]{captive-iptables.conf}
-
-\noindent Il listato \ref{lst:iptables-wifi} rappresenta la configurazione del
+Il listato \ref{lst:iptables-wifi} rappresenta la configurazione del
 firewall limitatamente alle regole strettamente necessarie a realizzare la
 funzionalità di captive portal. Il fatto di aver eliminato le regole non
 pertinenti il caso in esame può far sembrare inutili o ridondanti alcune di
@@ -553,13 +550,13 @@ Le prime nove righe sono relative alla marcatura in fase di prerouting:
     verrà analizzato dalla catena internet (salta alla riga 8)
     \item[(riga 8)] se il mac address sorgente è contenuto nel set captive\_ok
     ritorna
-      \item[(riga 9)] marca il pacchetto con il valore 0x63 (99 decimale)
+    \item[(riga 9)] marca il pacchetto con il valore 0x63 (99 decimale)
   \end{itemize}
   La tavola filter, riga 11:
   \begin{itemize}[itemindent=2em]
-      \item[(riga 12)] di default scarta i pacchetti che non soddisfano una delle regole
-      \item[(riga 13)] accetta il traffico relativo a connessioni già attivo
-      \item[(riga 14)] scarta i pacchetti marcati con il valore 0x63
+    \item[(riga 12)] di default scarta i pacchetti che non soddisfano una delle regole
+    \item[(riga 13)] accetta il traffico relativo a connessioni già attivo
+    \item[(riga 14)] scarta i pacchetti marcati con il valore 0x63
 \end{itemize}
 La tavola di NAT ha il compito di indirizzare il traffico http verso il sito
 del captive portal.
@@ -682,8 +679,7 @@ Riscriviamo quindi le regole dello script \ref{lst:nftables-wifi} cos\`i:
     }
 \end{lstlisting}
 \noindent\ldots
-
-\noindent La riga numero 8 del listato \ref{lst:nftables-wifi} adesso, non solo ritorna,
+La riga numero 8 del listato \ref{lst:nftables-wifi} adesso, non solo ritorna,
 di fatto autorizzando il pacchetto, ma contestualmente aggiorna l'elemento
 nell'insieme, reimpostandone la validit\`a a 15 giorni.
 
@@ -768,22 +764,23 @@ In questa configurazione le prestazioni della rete sono state valutate con iperf
   \end{table}
 \end{center}
 
-Volendo 
+Volendo scendere a pi\`u basso livello, \`e possibile verificare il 
 \begin{lstlisting}[style=customb]
-# nft monitor
-nft --debug=netlink add rule ip foo bar ct state new \
- ip saddr 192.168.0.0-192.168.0.13 tcp dport 22 accept
- ip foo bar
- [ ct load state => reg 1 ]
- [ bitwise reg 1 = (reg=1 & 0x00000008 ) ^ 0x00000000 ]
- [ cmp neq reg 1 0x00000000 ]
- [ payload load 4b @ network header + 12 => reg 1 ]
- [ cmp gte reg 1 0x0000a8c0 ]
- [ cmp lte reg 1 0x0d00a8c0 ]
- [ payload load 1b @ network header + 9 => reg 1 ]
- [ cmp eq reg 1 0x00000006 ]
- [ payload load 2b @ transport header + 2 => reg 1 ]
- [ cmp eq reg 1 0x00001600 ]
- [ immediate reg 0 accept ]
+# nft --debug=netlink add rule bridge filter forward ip saddr 10.0.0.0/8 accept
+bridge filter forward 
+  [ payload load 2b @ link header + 12 => reg 1 ]
+  [ cmp eq reg 1 0x00000008 ]
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x000000ff ) ^ 0x00000000 ]
+  [ cmp eq reg 1 0x0000000a ]
+  [ immediate reg 0 accept ]
+
+# nft --debug=netlink add rule baz x ip saddr 10.0.0.0/8 accept            
+ip baz x 
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x000000ff ) ^ 0x00000000 ]
+  [ cmp eq reg 1 0x0000000a ]
+  [ immediate reg 0 accept ]
+
 \end{lstlisting}
 %\begin{lstlisting}[style=customb]
