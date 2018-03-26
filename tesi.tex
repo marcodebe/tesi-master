@@ -114,7 +114,6 @@ vengono considerate solo i rilasci nei kernel stabili. Fino alla serie 2.6.x le
 nuove fetures venivano introdotte sperimentalmente nelle versioni con major
 revision number dispari, ad esempio 2.3.4; dalla versione 3 questo cambia e non
 esiste più la differenza tra kernel sperimentale e di produzione.
-
 \begin{center}
   \label{tab:history}
   \begin{table}[ht]
@@ -134,14 +133,11 @@ esiste più la differenza tra kernel sperimentale e di produzione.
 \end{center}
 Le prime funzionalità di firewall sono state introdotte nel nel 1994 grazie al
 lavoro di Alan Cox che ne ha fatto il porting da BSD.
-
 Questo codice costituisce la prima versione delle funzionalità di firewall
 all'interno del kernel Linux. Il successivo passo evolutivo, dopo ipfw, è
 stato ipfwadm, in realtà una riscrittura del corrispondente ipfw
 di BSD da parte di Alan Cox e Jos Vos.
-
 Ipfw e ipfwadm consentivano di realizzare funzioni di base di un firewall:
-
 \begin{itemize}
     \item accounting di pacchetti IP,
     \item firewall di ingresso,
@@ -192,12 +188,12 @@ Il tool di configurazione di NetFilter, che è poi il nome col quale è noto il
 framework stesso, è iptables.
 In realtà gli strumenti di configurazione del framework NetFilter formano una
 famiglia: oltre a iptables, che gestisce regole IPv4, esistono ip6tables per
-regole IPV6, ebtables per realizzare firewall layer 2 (Linux bridge)
+regole IPV6, ebtables per realizzare firewall layer 2 (Linux Bridge)
 e arptables che lavora nello specifico su messaggi ARP.
 
 Ai diversi tool corrispondono, nel kernel, parti di codice ad-hoc per il
-specifico protocollo: IPv4, IPv6, EB, ARP.  A volte si usa anche il termine
-Xtables per definire l'intero firewall.
+singolo protocollo: IPv4, IPv6, EB (Ethernet Bridge), ARP.  A volte si usa
+il termine Xtables per definire l'intera famiglia.
 
 La possibilità di aggiungere plugin ha fatto s\'i che nel tempo Xtables si
 sia arricchito di molti moduli aggiuntivi.
@@ -666,12 +662,12 @@ Riscriviamo quindi le regole dello script \ref{lst:nftables-wifi} cos\`i:
 
 \noindent\ldots
 \begin{lstlisting}[style=customc,firstnumber=6]
-    chain filter_prerouting {
-        type filter hook prerouting priority 0; policy accept;
-        ip saddr $WIFINET ether saddr @captive_ok set update ether saddr \
-                                                         timeout 15d @captive_ok return
-        ip saddr $WIFINET mark set 0x63
-    }
+chain filter_prerouting {
+    type filter hook prerouting priority 0; policy accept;
+    ip saddr $WIFINET ether saddr @captive_ok set update ether saddr \
+                                                     timeout 15d @captive_ok return
+    ip saddr $WIFINET mark set 0x63
+}
 \end{lstlisting}
 \noindent\ldots
 La riga numero 8 del listato \ref{lst:nftables-wifi} adesso, non solo ritorna,
@@ -693,12 +689,12 @@ Il caso pi\`u semplice consiste nel limitare la banda occupata globalmente
 dalla rete wifi (facciamo sempre riferimento allo script \ref{lst:nftables-wifi}):
 
 \begin{lstlisting}[style=customc,firstnumber=18]
-    chain forward {
-        type filter hook forward priority 0; policy accept;
-        limit rate over 8 mbytes/second drop
-        ct state established,related accept
-        mark 0x63 drop
-    }
+chain forward {
+    type filter hook forward priority 0; policy accept;
+    limit rate over 8 mbytes/second drop
+    ct state established,related accept
+    mark 0x63 drop
+}
 \end{lstlisting}
 Avendo introdotto la riga 20 imponiamo che il traffico inoltrato non possa
 superare 8 mbytes, i pacchetti in eccesso vengono scartati.
@@ -707,20 +703,18 @@ Una configurazione leggermente pi\`u articolata potrebbe dover distinguere e
 trattare differentemente diverse tipologie di traffico. Ad esempio potremmo
 decidere di limitare la banda per il download ma solo per la rete wifi:
 \begin{lstlisting}[style=customc,firstnumber=20]
-        ip daddr $WIFINET limit rate over 6 mbytes/second \
-                     burst 10 mbytes/second drop
+ip daddr $WIFINET limit rate over 6 mbytes/second burst 10 mbytes/second drop
 \end{lstlisting}
 L'opzione di burst consente di usufruire di maggiore banda temporaneamente.
 
 Una regola ancora pi\`u raffinata potrebbe essere la seguente dove sfruttiamo
 i meter e la funzione di concatenazione realizzata dalĺ'operatore ".":
 \begin{lstlisting}[style=customc,firstnumber=20]
-        ip daddr $WIFINET meter rate-meter { 
-             ip saddr . ip daddr limit rate over 3 mbytes/second
-             burst 5 mbytes/second } counter drop
+ip daddr $WIFINET meter rate-meter { ip saddr . ip daddr limit \
+       rate over 3 mbytes/second burst 5 mbytes/second } drop
 \end{lstlisting}
 In questo caso le limitazioni sono per coppie di indirizzi sorgente e destinazione,
-il punto concatena i due indirizzi generado la chiave dell'elemento nel meter.
+il punto concatena i due indirizzi generando la chiave dell'elemento nel meter.
 
 \chapter{Strumenti di sviluppo e test}
 
