@@ -247,6 +247,7 @@
 \usepackage{xcolor} % Required for specifying custom colours
 
 \colorlet{mdtRed}{red!50!black}
+\colorlet{debeRed}{red!85!yellow!70!black}
 
 %----------------------------------------------------------------------------------------
 %	MARGINS
@@ -524,7 +525,7 @@ bookmarksopenlevel=0,
 hypertexnames=false,
 colorlinks=true,% Set to false to disable coloring links
 citecolor=magenta,% The color of citations
-linkcolor=red,% The color of references to document elements (sections, figures, etc)
+linkcolor=debeRed,% The color of references to document elements (sections, figures, etc)
 urlcolor=mdtRed,% The color of hyperlinks (URLs)
 pdfstartview={FitV},
 unicode,

@@ -150,7 +150,6 @@ Ipfw e ipfwadm consentivano di realizzare funzioni di base di un firewall:
     \item redirezione (permette proxy trasparente)
     \item masquerading
 \end{itemize}
-
 A partire dal kernel Linux 2.2 (1999) viene rilasciato un nuovo sistema di packet
 filtering: ipchains. Ipchains \`e sostanzialmente una completa
 riscrittura del codice di ipfw di cui espande le funzionalità.  In particolare
@@ -184,7 +183,6 @@ Alcune delle caratteristiche di NetFilter sono:
     \item API per estensioni di terze parti
     \item Un gran numero di plugin/moduli
 \end{itemize}
-
 Per queste caratteristiche e per il fatto di essere software libero che riceve
 grande supporto della comunità open source, i firewall basati su Linux
 iniziano ad essere sviluppati anche in forma di prodotti commerciali offerti
@@ -208,15 +206,12 @@ A partire dal kernel 3.13 (2014) viene introdotto nftables con l'intento
 di soppiantare iptables.  Il nuovo framework di classificazione di pacchetti
 nasce con lo scopo di superare quelli che vengono considerati difetti o
 carenze di iptables.
-
 \begin{figure}[H]
-\begin{center}
     \includegraphics[width=\linewidth]{Netfilter-components.svg.png}
     \caption[Componenti di Netfilter]{Componenti di Netfilter:\footnotemark}
     \label{fig:netfilter}
-\end{center}
 \end{figure}
-Dalla figura \ref{fig:netfilter} risulta evidente la maggiore complessità e
+\noindent Dalla figura \ref{fig:netfilter} risulta evidente la maggiore complessità e
 \footnotetext{\href{http://inai.de/images/nf-components.svg}{Sorgente} (CC BY-SA 3.0).}%
 ridondanza di Xtables rispetto a nftables.  Nftables riduce il numero di linee
 di codice nel kernel riorganizzando e unificando quello che in iptables è
@@ -752,19 +747,18 @@ In questa configurazione le prestazioni della rete sono state valutate con iperf
   \label{tab:benchmark}
   \begin{table}[ht]
     \centering % used for centering table
-      \begin{tabular}{@{}llcc@{}}
+     \begin{tabular}{@{}llcc@{}}
      \toprule
-     {\bf Configurazione} & {\bf iperf} & {\bf wget 4GB} & {\bf }\\ \midrule
-         routing  & 32.6                & 4.5  & \\
-         mark     & 30.3                & 4.4  & \\ [0.5ex]
-         mark-full& 30.2                & 4.4  & \\ [0.5ex]
-          &           &      & \\ \bottomrule
+     {\bf Configurazione} & {\bf iperf} & {\bf wget 4GB} \\ \midrule
+         routing  & 32.6                & 4.5 \\
+         mark     & 30.3                & 4.4 \\ 
+         mark-full& 30.2                & 4.4 \\ \bottomrule
       \end{tabular}  
     \caption{Benchmark} % title of Table
   \end{table}
 \end{center}
-
-Volendo scendere a pi\`u basso livello, \`e possibile verificare il 
+Volendo scendere a pi\`u basso livello \`e possibile verificare il byte code
+impostato nel kernel:
 \begin{lstlisting}[style=customb]
 # nft --debug=netlink add rule bridge filter forward ip saddr 10.0.0.0/8 accept
 bridge filter forward 
@@ -781,6 +775,5 @@ ip baz x
   [ bitwise reg 1 = (reg=1 & 0x000000ff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000000a ]
   [ immediate reg 0 accept ]
-
 \end{lstlisting}
-%\begin{lstlisting}[style=customb]
+Il payload \`e il pacchetto in esame, la riga uno serve per ve
