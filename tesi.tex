@@ -109,7 +109,10 @@ test usando macchine virtuali.
 
 Per inquadrare l'argomento Linux firewall ritengo possa essere interessante
 fornire un breve riassunto dell'evoluzione degli strumenti per la
-classificazione ed il filtraggio dei pacchetti nel kernel Linux. Nella tabella \ref{tab:history}
+classificazione ed il filtraggio dei pacchetti nel kernel Linux.
+
+\section{Storia}
+Nella tabella \ref{tab:history}
 vengono considerate solo i rilasci nei kernel stabili. Fino alla serie 2.6.x le
 nuove fetures venivano introdotte sperimentalmente nelle versioni con major
 revision number dispari, ad esempio 2.3.4; dalla versione 3 questo cambia e non
@@ -165,6 +168,7 @@ Nel kernel 2.4 assistiamo nuovamente ad una completa riscrittura delle
 funzionalità di filtro e firewall di Linux, viene introdotto il framework 
 Netfilter (comunemente noto come iptables).
 
+\section{Netfilter}
 Netfilter è molto più maturo rispetto ai suoi predecessori, permette di
 realizzare firewall stateful con maggiori capacità di ispezione dei pacchetti
 e capacità di log.
@@ -746,6 +750,10 @@ il punto concatena i due indirizzi generando la chiave dell'elemento nel meter.
 
 \chapter{Strumenti di sviluppo e test}
 
+Per poter agire in sicurezza e pi\`u celermente ho preferito lavorare in un
+ambiente completamente virtualizzato.
+
+\section{Virtualizzazione}
 Per realizzare i test delle regole in un ambiente simulato, ho configurato tre
 server virtuali libvirt+lxc, cio\`e sostanzialmente tre Linux container.  Il
 sistema operativo sia dell'host che dei tre guest \`e Debian 9.4 (stretch) e
@@ -779,8 +787,15 @@ In questa configurazione le prestazioni della rete sono state valutate con iperf
     \caption{Benchmark} % title of Table
   \end{table}
 \end{center}
-Volendo scendere a pi\`u basso livello \`e possibile verificare il byte code,
-iniettato nel kernel, relativo ad una regola:
+\section{Debug}
+
+Il debug come accennato in precedenza \`e stato facilitato dal sistema di
+packet tracing.
+
+Ovviamente fondamentali i tool tradizionali, uno su tutti tcpdump.
+
+Volendo scendere ad un pi\`u basso livello si pu\`o arrivare a
+verificare il byte code, iniettato nel kerneli quando si inserisce una regola:
 \begin{lstlisting}[style=customc]
 # nft --debug=netlink add rule atable arule ip saddr 10.0.0.0/8 accept            
 ip atable arule
