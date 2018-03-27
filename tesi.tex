@@ -239,7 +239,7 @@ migrazione si rendeva necessaria anche perché il vecchio framework veniva
 dichiarato obsoleto e non più supportato.  Questo non è ancora accaduto per
 iptables e tutto fa pensare che in questo caso il percorso sarà diverso;
 vedremo in seguito i dettagli di come si possa prospettare la transizione da
-iptables al suo successore (spoiler: potrebbe non essere nftables).
+iptables al suo successore (che come vedremo potrebbe non essere nftables).
 
 L'uso del firewall nei primi anni era limitato all'implementazione di filtri
 per il traffico in ingresso verso i servizi esposti a internet e al {\em
@@ -333,7 +333,7 @@ programmi di generazione di black list.
 \section{Opportunità di migrazione a nftables}
 
 L'uso di ipset ha risolto i problemi, tuttavia ho voluto verificare cosa
-comporti la migrazione da iptable a nftables, in termini di impegno necessario
+comporti la migrazione da iptables a nftables, in termini di impegno necessario
 rispetto ai vantaggi offerti.
 
 Come accennato in precedenza, nftables si propone come framework completamente
@@ -528,6 +528,7 @@ Lo schema di verifica e autorizzazione del traffico è il seguente:
 \end{enumerate}
 
 \section{Captive Portal con iptables}
+\label{lab:captive}
 La configurazione di iptables che realizza quanto descritto sopra è la
 seguente:
 \lstinputlisting[caption=Mangle per wifi free, style=customc,
@@ -807,8 +808,10 @@ IPv6.
 Paradigmatica a questo proposito \`e la decisione presa da WikiMedia Foundation
 dopo aver discusso sull'argomento ``netfilter software at WMF: iptables vs
 nftables'', vedi  \url{"https://phabricator.wikimedia.org/T187994"}
-la coclusione \`e stata: ``EOF. I propose we follow up in the future.''
-
+la conclusione \`e stata:
+\begin{quote}
+    EOF. I propose we follow up in the future.
+\end{quote}
 Come nel caso di WikiMedia per molti il ragionamento sembra essere: ``tutto sta
 funzionando con iptables, non si evidenziano problemi, lo sforzo per passare a
 nftables \`e importante: non conviene.''.
@@ -816,15 +819,17 @@ nftables \`e importante: non conviene.''.
 \section{eBPF}
 
 Quello che invece sembra rappresentare il futuro del Linux Firewall \`e eBPF,
-enanched Berkeley Packet Filtering\footnote{sBPF fa molto di pi\`u che filtrare
+enanched Berkeley Packet Filtering\footnote{eBPF fa molto di pi\`u che filtrare
 pacchetti: \`e anche in grado di fare raw tracing in modo simile a quello di
-DTrace e SystemTap. Un buon punto di partenza \`e \url{https://github.com/iovisor/bcc}}
+DTrace e SystemTap. Un buon punto di partenza \`e
+\url{https://github.com/iovisor/bcc}}.
 L'articolo su Linux Weekly News del 19 febbraio 2018
 \footnote{\url{https://lwn.net/Articles/747551/}} dal titolo ``BPF comes to firewalls''
-dice:
+dice tra l'altro:
 
 \begin{quote}
-\ldots Miller said in the discussion that nftables failed to address the
+\ldots Miller\footnote{Si tratta di David Miller, uno dei mantainer dello stack
+TCPI/IP di Linux} said in the discussion that nftables failed to address the
 performance problems in Linux's packet-filtering implementation, driving users
 toward user-space networking technologies instead. There is a real possibility
 that nftables could end up being one of those experiments that is able to shed
@@ -833,4 +838,28 @@ some light on the problem space but never takes over in the real world.
 
 
 \section{eBPF/XDP}
+Quando abbiamo visto i possibili utilizzi dell'hook ingress consideravamo
+un vantaggio in termini di prestazioni quello di essere ``pi\`u vicini'' al
+driver della scheda di rete. XDP (eXpress Data Path) si spinge oltre
+demandando il filtraggio, e altro, direttamente al firmware della scheda di
+rete (vedi \url{https://www.iovisor.org/technology/xdp}).
 
+Ci sono gi\`a produttori di SmartNIC\footnote{Ad esempio
+    \url{https://www.netronome.com/products/smartnic/overview/}}, cio\`e di
+    schede di rete progettate apposta per affrancare il server 
+    da compiti sempre pi\`u complessi (offloading).  Qualcuno
+    tutto ci\`o spaventa perch\'e teme si possa trattare di tentativi di
+    ``kernel
+    bypass'' ma gli sviluppatori di soluzioni eBPF/XDP assicurano che ci\`o
+    non si
+    verificher\`a\footnote{\url{https://www.netronome.com/blog/avoid-kernel-bypass-in-your-network-infrastructure/}}.
+
+\section{Conclusioni}
+
+Visto il fermento intorno alle nuove soluzioni di packet filtering,
+considerando il fatto che iptables \`e tuttora il framework indiscusso per
+quanto riguarda il packet filtering e non c'\`e dubbio che non verr\`a
+abbandonato nell'immediato futuro, le ricadute pratiche del lavoro di
+sperimentazione svolto si limiteranno alla messa in produzione di nftables in
+virt\`u delle funzionalit\`a di cui abbiamo discusso nella sezione
+\ref{lab:captive}.
