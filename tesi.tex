@@ -802,17 +802,21 @@ Nonostante gli indiscutibili vantaggi di nftables rispetto ad iptables, non
 sembra che la sostituzione possa avvenire a breve.  La difficolt\`a di nftables
 nello scalzare iptables dipende dal fatto che iptables nei sui 17/18 anni di
 vita si \`e diffuso molto ed ha accresciuto le funzionalit\`a, magari in modo
-non elegante ma comunque efficace. La situazione assomiglia a quella di IPv4 e
-IPv6.
+non elegante ma comunque efficace. Per certi versi la situazione assomiglia a
+quella di ``IPv4 vs IPv6''.
 
 Paradigmatica a questo proposito \`e la decisione presa da WikiMedia Foundation
-dopo aver discusso sull'argomento ``netfilter software at WMF: iptables vs
-nftables'', vedi  \url{"https://phabricator.wikimedia.org/T187994"}
+dopo aver discusso sull'argomento {\em netfilter software at WMF: iptables vs
+nftables}, vedi  \url{"https://phabricator.wikimedia.org/T187994"}
 la conclusione \`e stata:
 \begin{quote}
     EOF. I propose we follow up in the future.
 \end{quote}
-Come nel caso di WikiMedia per molti il ragionamento sembra essere: ``tutto sta
+La conclusione \`e di Arturo Borrero, mantainer del pacchetto nftables per
+Debian e operator del cloud team di Wikimedia; Borrero stesso aveva previsto fino a 2
+anni di lavoro per la migrazione completa ad nftables della loro
+infrastruttura.
+Come nel caso di WikiMedia per molti il ragionamento sembra essere lo stesso: ``tutto sta
 funzionando con iptables, non si evidenziano problemi, lo sforzo per passare a
 nftables \`e importante: non conviene.''.
 
