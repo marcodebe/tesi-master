@@ -122,7 +122,7 @@ esiste più la differenza tra kernel sperimentale e di produzione.
        \toprule
        {\bf Framework/tool} & {\bf Stateful} & {\bf Anno} & {\bf Kernel} & {\bf Coder}\\ \midrule
        ipfw     & no & 1994      & 1.0  & Alan Cox \\
-       ipfwadm  & no & 1995-1999 & 1.2.$x$\marginnote{con $x>0$} - 2.0 & A.  Cox e Jon Vos\\ [0.5ex]
+       ipfwadm  & no & 1995-1999 & 1.2.$x$\marginnote{con $x>0$} - 2.0 & A. Cox e Jos Vos\\ [0.5ex]
        ipchains & no & 1999-2001 & 2.2  & Rusty Russell \\ [0.5ex]
        iptables & s\`i & 2001-     & 2.4  & Rusty Russell \\ [0.5ex]
        nftables & s\`i & 2014-     & 3.13 & gli stessi di iptables \\ [0.5ex]
@@ -155,11 +155,11 @@ in grado di gestire la frammentazione dei pacchetti.
 
 Anche ipchains come ipfwadm realizza però un firewall non stateful; l'unica
 opzione che ha per decidere se accettare un pacchetto entrante consiste nel
-verificare se il bit ACK \`e settato (significa che è una risposta relativa ad
-una connessione già stabilita), ma questo significa fidarsi del pacchetto di
-cui si deve stabilire il verdetto.  Ovviamente questa politica è inerentemente
-poco sicura in quanto è facile inviare pacchetti costruiti ad arte per
-superare i filtri del firewall.
+verificare se il bit ACK \`e settato (significa che si tratta di una risposta
+relativa ad una connessione già stabilita), ma questo significa fidarsi del
+pacchetto di cui si deve stabilire il verdetto.  Ovviamente questa politica è
+inerentemente poco sicura in quanto è facile inviare pacchetti costruiti ad
+arte per superare i filtri del firewall.
 
 Nel kernel 2.4 assistiamo nuovamente ad una completa riscrittura delle
 funzionalità di filtro e firewall di Linux, viene introdotto il framework 
@@ -169,7 +169,7 @@ Netfilter è molto più maturo rispetto ai suoi predecessori, permette di
 realizzare firewall stateful con maggiori capacità di ispezione dei pacchetti
 e capacità di log.
 
-Alcune delle caratteristiche di NetFilter sono:
+Alcune delle caratteristiche di Netfilter sono:
 
 \begin{itemize}
     \item Stateless packet filtering per IPv4 e IPV6
@@ -180,19 +180,19 @@ Alcune delle caratteristiche di NetFilter sono:
     \item API per estensioni di terze parti
     \item Un gran numero di plugin/moduli
 \end{itemize}
-Per queste caratteristiche e per il fatto di essere software libero che riceve
+Per queste caratteristiche, ed essendo software libero che riceve
 grande supporto della comunità open source, i firewall basati su Linux
-iniziano ad essere sviluppati anche in forma di prodotti commerciali offerti
+iniziarono ad essere sviluppati anche in forma di prodotti commerciali offerti
 da diverse aziende che ne forniscono supporto tecnico.
 
-Il tool di configurazione di NetFilter, che è poi il nome col quale è noto il
+Il tool di configurazione di Netfilter, che è poi il nome col quale è noto il
 framework stesso, è iptables.
-In realtà gli strumenti di configurazione del framework NetFilter formano una
+In realtà gli strumenti di configurazione del framework Netfilter formano una
 famiglia: oltre a iptables, che gestisce regole IPv4, esistono ip6tables per
 regole IPV6, ebtables per realizzare firewall layer 2 (Linux Bridge)
 e arptables che lavora nello specifico su messaggi ARP.
 
-Ai diversi tool corrispondono, nel kernel, parti di codice ad-hoc per il
+Ai diversi tool corrispondono, nel kernel, porzioni di codice ad-hoc per il
 singolo protocollo: IPv4, IPv6, EB (Ethernet Bridge), ARP.  A volte si usa
 il termine Xtables per definire l'intera famiglia.
 
@@ -262,8 +262,8 @@ locali; quello interno regole il traffico tra le reti locali e l'esterno.
 \end{center}
 \end{figure}
 In particolare sul firewall esterno sono presenti regole di tipo blacklist per
-un diversi insiemi di indirizzi, che viene aggiornato
-periodicamente (ogni 5 minuti).  Le liste di indirizzi provengono da:
+diversi insiemi di indirizzi. Le regole sono aggiorrnate
+ogni 5 minuti.  Le liste di indirizzi provengono da:
 
 \begin{itemize}
     \item \href{https://iplists.firehol.org/?ipset=firehol\_level1}{''FireHol
@@ -285,17 +285,17 @@ Captive Portal: si tratta di abilitare il traffico verso internet dei
 dispositivi wireless di coloro che si sono registrati tramite via interfaccia
 web.
 
-Il sistema di registrazione abilitazione, da me realizzato con la
+Il sistema di registrazione e abilitazione, realizzato da me con la
 collaborazione di un collega, agisce classificando i pacchetti in base al mac
 address: i pacchetti con mac adddress abilitato vengono inoltrati
-regolarmente, i rimanenti vengono marcati \footnote{L'associazione del valore
+regolarmente, i rimanenti vengono marcati\footnote{L'associazione del valore
 al pacchetto è realizzata all'interno del kernel, il pacchetto resta
-inalterato.} e successivamente una regola nella catena di inoltro devia il
+inalterato.} e, successivamente, una regola nella catena di inoltro devia il
 pacchetto verso il sito del Captive Portal che propone la registrazione.
 
 Abbiamo quasi 100 nuove registrazioni al giorno e sono 100.000 i dispositivi
 che hanno usufruito del servizio a partire dal 2012.  Non avendo specificato
-termini di scadenza la lista di mac address non decresce mai, ad esempio al
+termini di scadenza la lista di mac address non decresce mai; ad esempio al
 momento sono presenti oltre 23 mila indirizzi ethernet.  Di tanto in tanto si
 eseguono interventi di cancellazione delle autorizzazioni pi\`u vecchie.
 
@@ -379,8 +379,8 @@ modificato o andato perso).
 
 Ad esempio, cerchiamo tra le regole attualmente in uso quelle che non
 dovrebbero essere usate in produzione:
-\begin{lstlisting}[style=customb]
-# nft list ruleset | grep -w comment.\*DEBUG
+\begin{lstlisting}
+# nft list ruleset | grep -w "comment.*DEBUG"
 ip saddr @testsources nftrace set 1 comment "DEBUG: XXX remove in production"
 \end{lstlisting}
 
@@ -405,14 +405,14 @@ regole:
     \item postrouting
 \end{itemize}
 La possibilit\`a di intervenire precocemente sul pacchetto, appena il driver
-dell scheda di rete lo passa al livello superiore, \`e fondamentale per gestire
-attacchi tipo DDoS o comunque per scartare traffico non gradito senza
-appesantire il lavoro del kernel: questo \`e reso possibile dall'hook ingress
-che interviene prima del prerouting. Catene associate all'hook ingress sono
-definite in tavole della famiglia netdev e scartare i pacchetti a questo
-livello \`e due volte pi\`u efficiente rispetto al classico drop in prerouting.
+dell scheda di rete lo passa al livello superiore, \`e utile per gestire
+attacchi tipo DDoS o per limitare la banda senza appesantire il lavoro del
+kernel: questo \`e reso possibile dall'hook ingress che interviene prima del
+prerouting. Catene associate all'hook ingress sono definite in tavole della
+famiglia netdev. Scartare i pacchetti a questo livello \`e due volte
+pi\`u efficiente rispetto al drop in prerouting.
 
-I pacchetti che destinati a qualche processo locale (cioè sono indirizzati
+I pacchetti che sono destinati a qualche processo locale (cioè sono indirizzati
 all'host stesso) sono gestiti tramite l'hook input ed analogamente quelli
 generati da processi locali tramite l'hook output.
 
@@ -431,22 +431,22 @@ rende maggiormente leggibile e consistente il codice;
 con iptables spesso è necessario saltare ad un'altra catena contenente le diverse
 azioni. Ad esempio, log e drop con iptables:
 
-\begin{lstlisting}[style=customb]
+\begin{lstlisting}
 # iptables -t filter -A OUTPUT -d 10.0.0.1 -j LOG # Log, continue to next rule
 # iptables -t filter -A OUTPUT -d 10.0.0.1 -j DROP # Drops the same packet
 \end{lstlisting}
 oppure 
-\begin{lstlisting}[style=customb]
+\begin{lstlisting}
 # iptables -t filter -N LOGGING # Create non-base chain for logging
 # iptables -t filter -A LOGGING -j LOG # Add rule to logging chain to LOG
 # iptables -t filter -A LOGGING -j DROP # Add rule to logging chain to DROP
 # iptables -t filter -A OUTPUT -d 10.0.0.1 -j LOGGING # Jump LOGGING if match
 \end{lstlisting}
 con nftables \`e sufficiente una sola regola:
-\begin{lstlisting}[style=customb]
+\begin{lstlisting}
 # nft add rule ip filter output ip daddr 10.0.0.1 log drop
 \end{lstlisting}
-Un semplice esempio di configurazione per un server web potrebbe essere
+Un esempio minimale di configurazione per un server web pu\`o essere
 il seguente:
 \lstinputlisting[caption=Semplice esempio per server web, style=customc]{nftables-web.conf}
 Notare, riga 9, che le connessioni già stabilite o relative a
@@ -473,7 +473,7 @@ Ritengo che il sistema di tracing offerto da nftables sia di ottima qualit\`a;
 \`e fondamentale per la rapida individuazione dei bug durante la
 sperimentazione e lo sviluppo dei ruleset.
 Il tracing viene attivato impostando una metainformazione relativa al pacchetto: nftrace=1.
-\begin{lstlisting}[style=customb]
+\begin{lstlisting}
 # nft add rule filter forward udp dport 53 meta nftrace set 1
 \end{lstlisting}
 Dal momento che transita dalla catena di forward, ogni pacchetto destinato ad un DNS server riporter\`a
@@ -482,14 +482,14 @@ Per osservare il resoconto del viaggio del pacchetto \`e necessario attivare il
 monitor da console: i pacchetti con nftrace settato invieranno al monitor le informazioni
 con tutti i dettagli relativi al percorso seguito.
 Questo ad esempio \`e il percorso di un pacchetto destinato ad un DNS server:
-\begin{lstlisting}[style=customb]
+\begin{lstlisting}[style=customc]
 # nft monitor
-trace id e7d627c0 ip captive forward packet: iif "eth1" oif "eth0" \
-      ether saddr 00:16:3e:05:12:55 ether daddr 00:16:3e:35:e7:80 \
-      ip saddr 193.168.100.159 ip daddr 8.8.8.8 \
-      ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 36018 ip length 59 udp sport 40220 \
+trace id e7d627c0 ip captive forward packet: iif "eth1" oif "eth0" 
+      ether saddr 00:16:3e:05:12:55 ether daddr 00:16:3e:35:e7:80 
+      ip saddr 193.168.100.159 ip daddr 8.8.8.8 
+      ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 36018 ip length 59 udp sport 40220 
       udp dport domain udp length 39 @th,64,96 49749720051147984142130479104
-trace id e7d627c0 ip captive forward rule udp dport domain nftrace \
+trace id e7d627c0 ip captive forward rule udp dport domain nftrace 
       set 1 (verdict continue)
 trace id e7d627c0 ip captive forward verdict continue
 trace id e7d627c0 ip captive forward
@@ -575,7 +575,7 @@ Possiamo intanto notare due cose:
 \end{itemize}
 L'attivazione di un dispositivo si effettua inserendone il mac address nell'insieme
 captive\_ok\footnote{In questo caso usiamo la sintassi da linea di comando invece che quella strutturata da script.}:
-\begin{lstlisting}[style=customb]
+\begin{lstlisting}
 # nft add element captive captive_ok {00:16:3e:05:12:55}
 \end{lstlisting}
 
@@ -587,13 +587,13 @@ dobbiamo modificare la definizione del set, alla riga 5 del listato
 \ref{lst:nftables-wifi}, introducendo un timeout\footnote{Al momento \`e aperto
 un bug report perch\'e non si riescono ad impostare timeout > 24d20h31m23s:
 \url{https://bugzilla.netfilter.org/show\_bug.cgi?id=1237}} in questo modo:
-\begin{lstlisting}[style=customb]
-set captive_ok { type ether_addr\; timeout 15d\; }
+\begin{lstlisting}[style=customc, firstnumber=5]
+set captive_ok { type ether_addr; timeout 15d; }
 \end{lstlisting}
 Ora ogni elemento inserito nell'insieme verrà automaticamente eliminato dopo 15
 giorni e sarà possibile verificare in ogni momento quanto tempo resta prima
 della scadenza:
-\begin{lstlisting}[style=customb]
+\begin{lstlisting}[style=customc]
 # nft add set captive captive_ok_timeout { type ether_addr\; timeout 15d\; }
 # nft list set captive captive_ok_timeout
 table ip captive {
@@ -613,7 +613,7 @@ table ip captive {
 }
 \end{lstlisting}
 Ovviamente un elemento inserito successivamente avrà il proprio timer:
-\begin{lstlisting}[style=customb]
+\begin{lstlisting}[style=customc]
 # nft add element captive captive_ok_timeout {02:0a:76:09:41:8b}
 # nft list set captive captive_ok_timeout
 table ip captive {
@@ -625,12 +625,14 @@ table ip captive {
         }
 }
 \end{lstlisting}
-Alternativamente o in aggiunta al timeout di default, è possibile definire un set in cui ogni elemento può essere esplicitamente dichiarato con il proprio timeout:
-\begin{lstlisting}[style=customb]
-# nft add set captive captive_ok_timeout_flag { \
-                 type ether_addr\; flags timeout\; timeout 15d\; }
+Alternativamente o in aggiunta al timeout di default, è possibile definire un
+set in cui ogni elemento può essere esplicitamente dichiarato con il proprio
+timeout:
+
+\begin{lstlisting}
+# nft add set captive captive_ok_timeout_flag { type ether_addr\; flags timeout\; timeout 15d\; }
 # nft add element captive captive_ok_timeout_flag {02:0a:76:09:41:8b}
-root@fw:~/conf# nft list set captive captive_ok_timeout_flag
+# nft list set captive captive_ok_timeout_flag
 table ip captive {
         set captive_ok_timeout_flag {
                 type ether_addr
@@ -663,16 +665,15 @@ Nftables consente di agire sui set aggiornandoli dinamicamente in funzione del
 percorso del pacchetto ed \`e proprio questa la funzionalit\`a che ci serve.
 Riscriviamo quindi le regole dello script \ref{lst:nftables-wifi} cos\`i:
 
-\noindent\ldots
-\begin{lstlisting}[style=customc,firstnumber=6]
+\begin{lstlisting}[style=customc,firstnumber=5]
+...
 chain filter_prerouting {
     type filter hook prerouting priority 0; policy accept;
-    ip saddr $WIFINET ether saddr @captive_ok set update ether saddr \
-                                                     timeout 15d @captive_ok return
+    ip saddr $WIFINET ether saddr @captive_ok set update ether saddr timeout 15d @captive_ok return
     ip saddr $WIFINET mark set 0x63
 }
+...
 \end{lstlisting}
-\noindent\ldots
 La riga numero 8 del listato \ref{lst:nftables-wifi} adesso, non solo ritorna,
 di fatto autorizzando il pacchetto, ma contestualmente aggiorna l'elemento
 nell'insieme, reimpostandone la validit\`a a 15 giorni.
@@ -682,11 +683,13 @@ doversi confrontare con almeno tre domini diversi: le regole del firewall, il
 database delle autorizzazioni e i log. La soluzione sarebbe sicuramente di non
 facile realizzazione, soggetta a difetti e comunque difficile da monitorere e
 debuggare.
+
 \section{Limitazione della banda}
+
 Potrebbe essere utile imporre dei limiti di banda utilizzata da parte degli
 utenti della rete wifi. Anche in questo caso nftables offre una soluzione che
-risulta anche semplice da implementare in quanto anche in questo caso si integra in modo naturale nel
-linguaggio di definizione delle regole.
+risulta anche semplice da implementare in quanto anche in questo caso si
+integra in modo naturale nel linguaggio di definizione delle regole.
 
 Il caso pi\`u semplice consiste nel limitare la banda occupata globalmente
 dalla rete wifi (facciamo sempre riferimento allo script \ref{lst:nftables-wifi}):
@@ -702,6 +705,28 @@ chain forward {
 Avendo introdotto la riga 20 imponiamo che il traffico inoltrato non possa
 superare 8 mbytes, i pacchetti in eccesso vengono scartati.
 
+Questa limitazione di banda risulta pi\`u efficiente\footnote{Vedi ad esempio
+\url{https://netdevconf.org/1.2/slides/oct6/08\_nftables\_Load\_Balancing\_with\_nftables\_II\_Slides.pdf}}
+se configurata sfruttando l'hook ingress disponibile nella famiglia netdev.
+Nella configurazione delle regole per il Captive Portal ho scelto questo
+approccio.
+\begin{lstlisting}[style=customc,firstnumber=18]
+table netdev wifirate {
+    chain download {
+        # interfaccia verso
+        type filter hook ingress device eth2 priority 0;
+        limit rate over 8 mbytes/second counter drop
+    }
+    chain upload {
+        # interfaccia verso wifi
+        type filter hook ingress device eth1 priority 0;
+        limit rate over 8 mbytes/second counter drop
+    }
+}
+\end{lstlisting}
+La tabella wifirate limita la banda entrante dall'interfaccia eth2, download da internet,
+e quella entrante da eth1 cio\`e l'upload verso internet.
+
 Una configurazione leggermente pi\`u articolata potrebbe dover distinguere e
 trattare differentemente diverse tipologie di traffico. Ad esempio potremmo
 decidere di limitare la banda per il download ma solo per la rete wifi:
@@ -713,8 +738,7 @@ L'opzione di burst consente di usufruire di maggiore banda temporaneamente.
 Una regola ancora pi\`u raffinata potrebbe essere la seguente dove sfruttiamo
 i meter e la funzione di concatenazione realizzata dalĺ'operatore ".":
 \begin{lstlisting}[style=customc,firstnumber=20]
-ip daddr $WIFINET meter rate-meter { ip saddr . ip daddr limit \
-       rate over 3 mbytes/second burst 5 mbytes/second } drop
+ip daddr $WIFINET meter rate-meter { ip saddr . ip daddr limit rate over 3 mbytes/second burst 5 mbytes/second } drop
 \end{lstlisting}
 In questo caso le limitazioni sono per coppie di indirizzi sorgente e destinazione,
 il punto concatena i due indirizzi generando la chiave dell'elemento nel meter.
