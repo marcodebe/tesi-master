@@ -25,7 +25,7 @@
 
 %----------------------------------------------------------------------------------------
 
-Il progetto che \`e stato realizzato ha avuto origine da considerazioni
+Il progetto di seguito presentato ha avuto origine da considerazioni
 relative alla necessit\`a di aggiornare il sistema di firewall a protezione
 della rete interna dell'ospedale Galliera.
 
@@ -38,7 +38,7 @@ sistemi si sono dimostrati adeguati sia per quanto riguarda le funzionalit\`a
 che per prestazioni.
 
 Tuttavia nell'arco del 2017 si sono presentate alcune situazioni di
-criticit\`a, dovute sostanzialmente al grande numero di regole sui firewall.
+criticit\`a, causate sostanzialmente dal grande numero di regole sul firewall.
 
 Pur essendo riuscito a risolvere i problemi ho ritenuto di dover considerare
 questi segnali di possibile obsolescenza del sistema, studiando le attuali
@@ -118,23 +118,24 @@ esiste più la differenza tra kernel sperimentale e di produzione.
   \label{tab:history}
   \begin{table}[ht]
     \centering % used for centering table
-      \begin{tabular}{@{}llcc@{}}
-     \toprule
-     {\bf Framework/tool} &         {\bf Anno}      &  {\bf Kernel} & {\bf Coder}\\ \midrule
-         ipfw     & 1994      & 1.0  & Alan Cox \\
-         ipfwadm  & 1995-1999 & 1.2.$x$\marginnote{con $x>0$} - 2.0 & A.  Cox e Jon Vos\\ [0.5ex]
-         ipchains & 1999-2001 & 2.2  & Rusty Russell \\ [0.5ex]
-         iptables & 2001-     & 2.4  & Rusty Russell \\ [0.5ex]
-         nftables & 2014-     & 3.13 & gli stessi di iptables \\ [0.5ex]
-         eBPF/XDP &           &      & \\ \bottomrule
-      \end{tabular}  
-    \caption{Evoluzione dei tool (kernel stable)} % title of Table
+     \begin{tabular}{@{}lcccl@{}}
+       \toprule
+       {\bf Framework/tool} & {\bf Stateful} & {\bf Anno} & {\bf Kernel} & {\bf Coder}\\ \midrule
+       ipfw     & no & 1994      & 1.0  & Alan Cox \\
+       ipfwadm  & no & 1995-1999 & 1.2.$x$\marginnote{con $x>0$} - 2.0 & A.  Cox e Jon Vos\\ [0.5ex]
+       ipchains & no & 1999-2001 & 2.2  & Rusty Russell \\ [0.5ex]
+       iptables & s\`i & 2001-     & 2.4  & Rusty Russell \\ [0.5ex]
+       nftables & s\`i & 2014-     & 3.13 & gli stessi di iptables \\ [0.5ex]
+       %eBPF/XDP & s\`i &       &      & \\ 
+       \bottomrule
+     \end{tabular}  
+    \caption{Evoluzione dei tool (kernel versioni stabili)} % title of Table
   \end{table}
 \end{center}
-Le prime funzionalità di firewall sono state introdotte nel nel 1994 grazie al
+Le prime funzionalità di firewall sono state introdotte nel 1994 grazie al
 lavoro di Alan Cox che ne ha fatto il porting da BSD.
 Questo codice costituisce la prima versione delle funzionalità di firewall
-all'interno del kernel Linux. Il successivo passo evolutivo, dopo ipfw, è
+all'interno del kernel Linux. Il successore di ipfw è
 stato ipfwadm, in realtà una riscrittura del corrispondente ipfw
 di BSD da parte di Alan Cox e Jos Vos.
 Ipfw e ipfwadm consentivano di realizzare funzioni di base di un firewall:
@@ -157,7 +158,7 @@ opzione che ha per decidere se accettare un pacchetto entrante consiste nel
 verificare se il bit ACK \`e settato (significa che è una risposta relativa ad
 una connessione già stabilita), ma questo significa fidarsi del pacchetto di
 cui si deve stabilire il verdetto.  Ovviamente questa politica è inerentemente
-oco sicura in quanto è facile inviare pacchetti costruiti ad arte per
+poco sicura in quanto è facile inviare pacchetti costruiti ad arte per
 superare i filtri del firewall.
 
 Nel kernel 2.4 assistiamo nuovamente ad una completa riscrittura delle
@@ -171,7 +172,7 @@ e capacità di log.
 Alcune delle caratteristiche di NetFilter sono:
 
 \begin{itemize}
-    \item Statless packet filtering per IPv4 e IPV6
+    \item Stateless packet filtering per IPv4 e IPV6
     \item Stateful packet filtering per IPv4 (inizialmente, in seguito
         aggiunto il supporto per IPv6 (2.6.15)
     \item Network e Port address translation (NAT e NAPT)
@@ -214,7 +215,7 @@ di codice nel kernel riorganizzando e unificando quello che in iptables è
 replicato per i diversi protocolli.  Inoltre nftables introduce strutture
 dati, insiemi\footnote{Iptables non gestisce nativamente gli insiemi ma esiste
 il tool ipset che fornisce a iptables questa funzionalità.}, dizionari e mappe,
-che permettono di semplificare e ottimizzano le regole del firewall.
+che permettono di semplificare e ottimizzare le regole del firewall.
 Migliorano anche la leggibilità delle regole e le prestazioni.
 
 Un'altra caratteristica molto importante consiste nel fatto che con iptables
@@ -281,15 +282,17 @@ Il totale delle regole supera le 20 mila.
 
 Il firewall interno ha la particolarità di dover gestire le regole del 
 Captive Portal: si tratta di abilitare il traffico verso internet dei
-dispositivi wireless di coloro che si sono registrati.
+dispositivi wireless di coloro che si sono registrati tramite via interfaccia
+web.
 
-Il sistema di abilitazione, da me realizzato con la collaborazione di un collega, agisce
-classificando i pacchetti in base al mac address: i pacchetti con mac adddress
-abilitato vengono inoltrati regolarmente, i rimanenti vengono marcati%
-\footnote{L'associazione del valore al pacchetto è realizzata all'interno del kernel,
-il pacchetto resta inalterato.} e successivamente una regola nella catena di
-inoltro devia il pacchetto verso il sito del Captive Portal che propone la
-registrazione.
+Il sistema di registrazione abilitazione, da me realizzato con la
+collaborazione di un collega, agisce classificando i pacchetti in base al mac
+address: i pacchetti con mac adddress abilitato vengono inoltrati
+regolarmente, i rimanenti vengono marcati \footnote{L'associazione del valore
+al pacchetto è realizzata all'interno del kernel, il pacchetto resta
+inalterato.} e successivamente una regola nella catena di inoltro devia il
+pacchetto verso il sito del Captive Portal che propone la registrazione.
+
 Abbiamo quasi 100 nuove registrazioni al giorno e sono 100.000 i dispositivi
 che hanno usufruito del servizio a partire dal 2012.  Non avendo specificato
 termini di scadenza la lista di mac address non decresce mai, ad esempio al
@@ -365,7 +368,7 @@ mentre le strutture dati consentono di migliorare le prestazioni e la
 leggibilit\`a delle regole, oltre a non richiedere il supporto di tool
 esterni.
 
-Gli strumenti di debug e log sono molto potenti, e quindi utili: \`e ad
+Gli strumenti di debug e log sono molto raffinati e utili: \`e ad
 esempio possibile tracciare l'intero percorso di un singolo pacchetto
 attraverso le regole.  Esiste anche la funzione di monitor che permette di
 osservare in tempo reale le modifiche alle regole di firewall.
@@ -421,11 +424,11 @@ l'amministratore \`e libero di configurare tavole (table) e catene
 (chain)\footnote{Le tavole sono contenitori di catene che a loro volta
 contengono regole.} nel modo ritenuto pi\`u adatto al problema da risolvere.
 
-Nemmeno i contatori sono attivi per default, a differenza di iptables, ma
+Nemmeno i contatori sono attivi per default, a differenza di iptables:
 devono essere esplicitamente attivati quando necessario, migliorando
 cos\`i le prestazioni. Il fatto di poter indicare pi\`u azioni per una regola
-rende pi\`u consistente e leggibile il codice, con
-iptables spesso è necessario saltare ad un'altra catena contenente le diverse
+rende maggiormente leggibile e consistente il codice;
+con iptables spesso è necessario saltare ad un'altra catena contenente le diverse
 azioni. Ad esempio, log e drop con iptables:
 
 \begin{lstlisting}[style=customb]
@@ -441,7 +444,7 @@ oppure
 \end{lstlisting}
 con nftables \`e sufficiente una sola regola:
 \begin{lstlisting}[style=customb]
-# nft add rule ip FILTER OUTPUT ip daddr 10.0.0.1 log drop
+# nft add rule ip filter output ip daddr 10.0.0.1 log drop
 \end{lstlisting}
 Un semplice esempio di configurazione per un server web potrebbe essere
 il seguente:
@@ -751,23 +754,19 @@ In questa configurazione le prestazioni della rete sono state valutate con iperf
     \caption{Benchmark} % title of Table
   \end{table}
 \end{center}
-Volendo scendere a pi\`u basso livello \`e possibile verificare il byte code
-impostato nel kernel:
-\begin{lstlisting}[style=customb]
-# nft --debug=netlink add rule bridge filter forward ip saddr 10.0.0.0/8 accept
-bridge filter forward 
-  [ payload load 2b @ link header + 12 => reg 1 ]
-  [ cmp eq reg 1 0x00000008 ]
-  [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000ff ) ^ 0x00000000 ]
-  [ cmp eq reg 1 0x0000000a ]
-  [ immediate reg 0 accept ]
-
-# nft --debug=netlink add rule baz x ip saddr 10.0.0.0/8 accept            
-ip baz x 
+Volendo scendere a pi\`u basso livello \`e possibile verificare il byte code,
+iniettato nel kernel, relativo ad una regola:
+\begin{lstlisting}[style=customc]
+# nft --debug=netlink add rule atable arule ip saddr 10.0.0.0/8 accept            
+ip atable arule
   [ payload load 4b @ network header + 12 => reg 1 ]
   [ bitwise reg 1 = (reg=1 & 0x000000ff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000000a ]
   [ immediate reg 0 accept ]
 \end{lstlisting}
-Il payload \`e il pacchetto in esame, la riga uno serve per ve
+Il payload \`e il pacchetto in esame. Alla riga 3 vengono caricati, nel
+registro numero 1, 4 byte a partire dalla dodicesima posizione dell'header del
+pacchetto: cio\`e l'indirizzo IPv4 sorgente. Alla riga 4 viene applicata la
+netmask per estrarre il byte pi\`u significativo che alla riga 5 viene
+confrontato con 0xa (10 decimale): se il confronto ha successo il pacchetto
+viene accettato.
