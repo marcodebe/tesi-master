@@ -811,26 +811,29 @@ netmask per estrarre il byte pi\`u significativo che alla riga 5 viene
 confrontato con 0xa (10 decimale): se il confronto ha successo il pacchetto
 viene accettato.
 
-\chapter{Oltre nftables}
+\chapter{Considerazioni finali}
 
 Nonostante gli indiscutibili vantaggi di nftables rispetto ad iptables, non
 sembra che la sostituzione possa avvenire a breve.  La difficolt\`a di nftables
 nello scalzare iptables dipende dal fatto che iptables nei sui 17/18 anni di
-vita si \`e diffuso molto ed ha accresciuto le funzionalit\`a, magari in modo
-non elegante ma comunque efficace. Per certi versi la situazione assomiglia a
-quella di ``IPv4 vs IPv6''.
+vita si \`e diffuso molto (datacenter, virtualizzazione, container, \ldots) ed
+ha accresciuto le funzionalit\`a, magari in modo non elegante ma comunque
+efficace. Per certi versi la situazione assomiglia a quella di ``IPv4 vs
+IPv6''.
 
 Paradigmatica a questo proposito \`e la decisione presa da WikiMedia Foundation
 dopo aver discusso sull'argomento {\em netfilter software at WMF: iptables vs
-nftables}, vedi  \url{"https://phabricator.wikimedia.org/T187994"}
-la conclusione \`e stata:
+nftables}, vedi  \url{"https://phabricator.wikimedia.org/T187994"}.  La
+proposta di migrare l'infrastruttura di WMF \`e stata avanzata da Arturo
+Borrero, mantainer del pacchetto nftables per Debian e operator del cloud team
+di Wikimedia, e lui stesso conclude che non \`e il momento:
 \begin{quote}
     EOF. I propose we follow up in the future.
 \end{quote}
-La conclusione \`e di Arturo Borrero, mantainer del pacchetto nftables per
-Debian e operator del cloud team di Wikimedia; Borrero stesso aveva previsto fino a 2
-anni di lavoro per la migrazione completa ad nftables della loro
+Borrero stesso aveva comunque previsto fino a 2
+anni di lavoro per la migrazione completa ad nftables dell'intera
 infrastruttura.
+
 Come nel caso di WikiMedia per molti il ragionamento sembra essere lo stesso: ``tutto sta
 funzionando con iptables, non si evidenziano problemi, lo sforzo per passare a
 nftables \`e importante: non conviene.''.
