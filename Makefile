@@ -1,5 +1,9 @@
-%.eps: %.svg
-		inkscape $*.svg -E $*.eps --export-ps-level=3
+.PHONY = debe.pdf
 
-debe.pdf: debe.tex tesi.tex
+images = iPhone.eps  net.eps  nf-components.eps  vnet.eps flow.eps
+
+$(images): %.eps: %.svg
+	inkscape -z $< -E $@ --export-ps-level=3
+
+debe.pdf: debe.tex tesi.tex *eps
 	xelatex debe
