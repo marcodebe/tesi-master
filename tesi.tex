@@ -52,12 +52,6 @@ virtuale su scenari architettati ad-hoc. La sperimentazione \`e terminata e ha
 fornito elementi utili per valutare l'opportunit\`a di mettere in atto la
 migrazione. 
 
-Nel seguito utilizzeremo la conveznzione che righe come le seguenti:
-\begin{lstlisting}
-# nft list ruleset | grep -w "comment.*DEBUG"
-ip saddr @testsources nftrace set 1 comment "DEBUG: XXX remove in production"
-\end{lstlisting}
-rappresentano comandi eseguiti sulla shell da root.
 
 \chapter{Packet Filtering in Linux}
 
@@ -303,6 +297,23 @@ di regole, parte del lavoro va eseguita manualmente.
 
 \chapter{Nftables}
 
+Nel seguito utilizzeremo la convenzione per cui righe come le seguenti
+rappresentano uno script di configurazione di nftables:
+\begin{lstlisting}[style=customc]
+table ip filter {
+        chain input {type filter hook input priority 0; policy drop; 
+        	ip saddr 42.0.0.0/ accept;
+	}
+}
+\end{lstlisting}
+
+Queste invece rappresentano comandi, eseguiti da linea di comando da root, con
+relativo output:
+\begin{lstlisting}
+# nft list ruleset | grep -w "comment.*DEBUG"
+ip saddr @testsources nftrace set 1 comment "DEBUG: XXX remove in production"
+\end{lstlisting}
+
 \section{Caratteristiche di nftables}
 Vediamo quali sono le principali novit\`a introdotte da nftables.
 \begin{itemize}
@@ -452,7 +463,7 @@ Per osservare il resoconto del ``viaggio'' del pacchetto \`e necessario attivare
 monitor da console: i pacchetti con nftrace settato invieranno al monitor le informazioni
 con i dettagli relativi al percorso seguito.
 Questo ad esempio \`e il percorso di un pacchetto destinato ad un DNS server:
-\begin{lstlisting}[style=customc]
+\begin{lstlisting}
 # nft monitor
 trace id e7d627c0 ip captive forward packet: iif "eth1" oif "eth0" ether saddr 00:16:3e:05:12:55 ether daddr 00:16:3e:35:e7:80 ip saddr 193.168.100.159 ip daddr 8.8.8.8 ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 36018 ip length 59 udp sport 40220 udp dport domain udp length 39 @th,64,96 49749720051147984142130479104
 trace id e7d627c0 ip captive forward rule udp dport domain nftrace set 1 (verdict continue)
@@ -520,15 +531,13 @@ Le prime nove righe sono relative alla marcatura in fase di prerouting:
 \end{itemize}
 La tavola di NAT ha il compito di indirizzare il traffico http verso il sito
 del captive portal.
-Le righe dalla $20$ in poi sono relative all'insieme che contiene i mac
-address autorizzati\footnote{Gli indirizzi non sono quelli reali perché anche
-il mac address è un dato personale e agli utenti non è stato notificato un uso
-di questo tipo dei loro dati.}, captive\_ok:
-l'intestazione descrive la struttura dati di tipo hash di mac address e a
+Le righe dalla $20$ in poi sono relative all'insieme captive\_ok, quello che contiene i mac
+address autorizzati\footnote{Qui abbiamo usato indirizzi fittizi.}
+L'intestazione indica che si tratta di un insieme di mac address e a
 seguire sono elencati gli elementi dell'insieme.
 
 \section{Captive Portal nella versione nftables}
-Il porting ad nftables della logica sopra descritta è il seguente:
+Un'implementazione della logica del captive portal in nftables è la seguente:
 \lstinputlisting[caption=Captive portal con nftables, style=customc,
 label={lst:nftables-wifi}]{captive-nftables.conf}
 Possiamo intanto notare due cose:
@@ -540,12 +549,11 @@ Possiamo intanto notare due cose:
     (prerouting): la priorità definisce quale deve essere l'ordine di consultazione
 \end{itemize}
 L'attivazione di un dispositivo si effettua inserendone il mac address nell'insieme
-captive\_ok\footnote{In questo caso usiamo la sintassi da linea di comando invece che quella strutturata da script.}:
+captive\_ok:
 \begin{lstlisting}
 # nft add element captive captive_ok {00:16:3e:05:12:55}
 \end{lstlisting}
-
-Passiamo ora a descrivere alcune funzionalità spcifiche di nftables.
+Passiamo ora a descrivere alcune funzionalità specifiche di nftables.
 
 \section{Autorizzazioni temporizzate}
 
@@ -560,10 +568,10 @@ dobbiamo modificare la definizione del set, alla riga 5 del listato
 \begin{lstlisting}[style=customc, firstnumber=5]
 set captive_ok { type ether_addr; timeout 15d; }
 \end{lstlisting}
-Ora ogni elemento inserito nell'insieme verrà automaticamente eliminato dopo 15
-giorni e sarà possibile verificare in ogni momento quanto tempo resta prima
+Ogni elemento inserito nell'insieme verrà eliminato automaticamente dopo 15
+giorni. \`E possibile verificare in ogni istante quanto tempo resta prima
 della scadenza:
-\begin{lstlisting}[style=customc]
+\begin{lstlisting}
 # nft add set captive captive_ok_timeout { type ether_addr\; timeout 15d\; }
 # nft list set captive captive_ok_timeout
 table ip captive {
@@ -573,7 +581,7 @@ table ip captive {
         }
 }
 # nft add element captive captive_ok_timeout {6c:0b:84:91:7d:a4}
-# sleep 5 && nft list set captive captive_ok_timeoulat
+# sleep 5 && nft list set captive captive_ok_timeout
 table ip captive {
         set captive_ok_timeout {
                 type ether_addr
@@ -582,8 +590,8 @@ table ip captive {
         }
 }
 \end{lstlisting}
-Ovviamente un elemento inserito successivamente avrà il proprio timer:
-\begin{lstlisting}[style=customc]
+Verifichiamo che ogni elemento disponga di un proprio timer indipendente:
+\begin{lstlisting}
 # nft add element captive captive_ok_timeout {02:0a:76:09:41:8b}
 # nft list set captive captive_ok_timeout
 table ip captive {
@@ -596,7 +604,7 @@ table ip captive {
 }
 \end{lstlisting}
 \newpage
-Alternativamente o in aggiunta al timeout di default, è possibile definire un
+\noindent Alternativamente o in aggiunta al timeout di default, è possibile definire un
 set in cui ogni elemento può essere esplicitamente dichiarato con il proprio
 timeout:
 
@@ -622,49 +630,47 @@ table ip captive {
         }
 }
 \end{lstlisting}
-Questa caratteristica dei set alleggerisce il lavoro di gestione del sistema, in quanto non è necessario intervenire con altri
+La scadenza automatica degli elementi degli insiemi semplifica la gestione del sistema in quanto non è necessario intervenire con altri
 strumenti per eliminare i mac address scaduti.
+
 \section{Aggiornamento del timeout}
 In realt\`a sarebbe auspicabile un comportamento pi\`u {\em intelligente}: se un utente \`e 
 un ospite frequente\footnote{Ad esempio perch\'e dipendente.} vorremmo evitare
-di chiedergli la registrazione ogni 15 giorni,
+di dovergli chiedere la registrazione ogni 15 giorni;
 vogliamo invece far scadere l'autorizzazione 15 giorni dopo l'ultimo utilizzo del servizio.
 Per ottenere ci\`o \`e necessario aggiornare il timeout
 ogni volta che si osserva transitare un pacchetto generato dal singolo client.
 
-Nftables consente di agire sui set aggiornandoli dinamicamente in funzione del
-percorso del pacchetto ed \`e proprio questa la funzionalit\`a che ci serve.
-Riscriviamo quindi le regole dello script \ref{lst:nftables-wifi} cos\`i:
+Nftables \`e in grado di aggiornare dinamicamente i set in funzione del
+percorso del pacchetto: proprio la funzionalit\`a che ci serve.
+Apportiamo quindi questa modifica allo script \ref{lst:nftables-wifi}:
 
-\begin{lstlisting}[style=customc,firstnumber=5]
-...
+\begin{lstlisting}[style=customc,firstnumber=6]
 chain filter_prerouting {
     type filter hook prerouting priority 0; policy accept;
     ip saddr $WIFINET ether saddr @captive_ok set update ether saddr timeout 15d @captive_ok return
     ip saddr $WIFINET mark set 0x63
 }
-...
 \end{lstlisting}
-La riga numero 8 del listato \ref{lst:nftables-wifi} adesso, non solo ritorna,
+La riga numero 8 del listato \ref{lst:nftables-wifi} adesso non solo ritorna,
 di fatto autorizzando il pacchetto, ma contestualmente aggiorna l'elemento
-nell'insieme, reimpostandone la validit\`a a 15 giorni.
+reimpostandone la validit\`a a 15 giorni.
 
-Questa funzionalit\`a realizzata a livello applicativo avrebbe significato
+Realizzare applicativamente questa funzionalit\`a avrebbe significato
 doversi confrontare con almeno tre domini diversi: le regole del firewall, il
-database delle autorizzazioni e i log. La soluzione sarebbe sicuramente di non
-facile realizzazione, soggetta a difetti e comunque difficile da monitorere e
-debuggare.
+database delle autorizzazioni e i log. Una soluzione affidabile non sarebbe stata di
+facile realizzazione.
 
 \section{Limitazione della banda}
 
-Potrebbe essere utile imporre dei limiti di banda utilizzata da parte degli
-utenti della rete wifi. Anche in questo caso nftables offre una soluzione che
-risulta semplice da implementare, direi quasi in modo naturale, nel linguaggio
-di definizione delle regole.
+Potrebbe essere necessario in certi casi imporre qualche limite alla banda
+dedicata agli utenti della rete wifi. Anche in questo caso nftables offre una
+soluzione che risulta semplice da implementare
+nel linguaggio di definizione delle regole.
 
 Il caso pi\`u semplice consiste nel limitare la banda occupata globalmente
 dalla rete wifi.
-Facendo sempre riferimento allo script \ref{lst:nftables-wifi}), riscriviamo
+Facendo sempre riferimento allo script \ref{lst:nftables-wifi}, riscriviamo
 la catena di forward in questo modo:
 
 \begin{lstlisting}[style=customc,firstnumber=18]
@@ -679,13 +685,13 @@ Avendo introdotto la riga 20 imponiamo che il traffico inoltrato non possa
 superare 8 mbytes, i pacchetti in eccesso vengono scartati.
 Questa operazione risulta per\`o  pi\`u efficiente\footnote{Vedi ad esempio
 \url{https://netdevconf.org/1.2/slides/oct6/08\_nftables\_Load\_Balancing\_with\_nftables\_II\_Slides.pdf}}
-se configurata sfruttando l'hook ingress disponibile nella famiglia netdev.
-Nella configurazione delle regole per il captive portal ho scelto questo
+se eseguita in ingress.
+In effetti nella configurazione delle regole per il captive portal ho scelto questo
 approccio.
 \begin{lstlisting}[style=customc,firstnumber=18]
 table netdev wifirate {
     chain download {
-        # interfaccia verso
+        # interfaccia verso internet
         type filter hook ingress device eth2 priority 0;
         limit rate over 8 mbytes/second counter drop
     }
@@ -697,44 +703,40 @@ table netdev wifirate {
 }
 \end{lstlisting}
 La tabella wifirate limita la banda entrante dall'interfaccia eth2, download da internet,
-e quella entrante dall'interfaccia eth1 cio\`e l'upload verso internet.
+e la banda entrante dall'interfaccia eth1, cio\`e l'upload verso internet.
 
-Una variante per assicurarsi che la limitazione si applichi alla rete wifi con
-l'opzione burst che consente di usufruire di maggiore banda temporaneamente:
+\noindent Quella che segue \`e una variante che garantisce che la limitazione si applichi solo alla rete wifi e che
+permette di oltrepassare il limite per brevi periodi se necessario (burst):
 \begin{lstlisting}[style=customc,firstnumber=20]
 ip daddr $WIFINET limit rate over 6 mbytes/second burst 10 mbytes/second drop
 \end{lstlisting}
-
-Una regola ancora pi\`u raffinata potrebbe essere la seguente dove sfruttiamo
-i meter e la funzione di concatenazione realizzata dalĺ'operatore ".":
+Una regola ancora pi\`u raffinata \`e la seguente. Qui sfruttiamo i meter e la concatenazione:
 \begin{lstlisting}[style=customc,firstnumber=20]
 ip daddr $WIFINET meter rate-meter { ip saddr . ip daddr limit rate over 3 mbytes/second burst 5 mbytes/second } drop
 \end{lstlisting}
-In questo caso le limitazioni sono per coppie di indirizzi sorgente e
-destinazione: il punto concatena i due indirizzi generando la chiave
-dell'elemento al
-quale si applica la limitazione.
+L'operatore ``.'' concatena i due indirizzi, sorgente e destinazione, generando la chiave
+dell'elemento al quale si applica il limite di 3 megabyte al secondo.
 
 Queste sono solo alcune delle potenziali\`a di nftables, ma sono quelle che
 risultano pi\`u interessanti per i nostri scopi.
 
 \chapter{Strumenti di sviluppo e test}
 
-Per poter agire in sicurezza e pi\`u celermente ho preferito lavorare in un
-ambiente completamente virtualizzato.
 
 \section{Virtualizzazione}
+
 Per realizzare i test delle regole in un ambiente simulato, ho configurato tre
-server virtuali libvirt+lxc, cio\`e sostanzialmente tre Linux container.  Il
-sistema operativo sia dell'host che dei tre guest \`e Debian 9.4 (stretch) e
-l'hardware consiste di un laptop Intel i5 dual core.
+server virtuali libvirt+lxc, cio\`e sostanzialmente tre Linux container con
+sistema operativo Debian 9.4 (sia per i guest che per l'host); l'hardware
+consiste di un laptop Intel i5 dual core.
 
 Una delle tre macchine, chiamata fw, simula il firewall tra una LAN e una rete
-pubblica, la seconda, chiamata pc, rappresenta una macchina all'interno della rete
-locale mentre la terza simula un server in internet, chiamato wikipedia.
+pubblica. La seconda macchina, chiamata pc, rappresenta un client all'interno
+di una rete locale mentre la terza simula un server in internet, chiamato
+wikipedia.
 
-Lo strato di virtualizzazione della rete \`e quello offerto da libvirt e
-definisce le reti loc e net rispettivamente per la LAN e per internet.
+Lo strato di virtualizzazione della rete \`e quello offerto da libvirt; sono
+state definite le reti loc e net rispettivamente per la LAN e per internet.
 \begin{figure}[H]
 \begin{center}
       \includegraphics[width=.7\linewidth]{vnet.eps}
@@ -742,7 +744,7 @@ definisce le reti loc e net rispettivamente per la LAN e per internet.
       \label{fig:vnet}
 \end{center}
 \end{figure}
-In questa configurazione le prestazioni della rete sono state valutate con
+\noindent In questa configurazione le prestazioni della rete sono state valutate con
 iperf(1) e wget(1).
 Nel primo test, routing, la macchina fw agisce come semplice router.
 Nel test mark \`e attiva la verifica dell'appartenenza del mac address
@@ -817,9 +819,10 @@ richiederebbe 1 se non 2 anni, conclude che non \`e il momento:
     {\em EOF. I propose we follow up in the future.}
 \end{quote}
 
-Come nel caso di WikiMedia per molti il ragionamento sembra essere lo stesso: ``tutto sta
+\noindent Come nel caso di WikiMedia per molti il ragionamento sembra essere lo stesso:
+{\em``tutto sta
 funzionando con iptables, non si evidenziano problemi, lo sforzo per passare a
-nftables \`e importante: non conviene.''.
+    nftables \`e importante: non conviene.''}.
 
 \section{eBPF}
 
@@ -849,24 +852,21 @@ driver della scheda di rete. XDP (eXpress Data Path) si spinge oltre
 demandando (offloading) il filtraggio, e altro, direttamente al firmware della scheda di
 rete (vedi \url{https://www.iovisor.org/technology/xdp}).
 
-Ci sono gi\`a produttori di SmartNIC\footnote{Ad esempio
-    \url{https://www.netronome.com/products/smartnic/overview/}}, cio\`e di
-    schede di rete progettate apposta per affrancare il server 
-    da compiti sempre pi\`u complessi.
+Vengono gi\`a prodotte e commercializzate le cosiddette SmartNIC\footnote{Ad esempio
+    \url{https://www.netronome.com/products/smartnic/overview/}},
+    schede di rete progettate appositamente per l'offloading.
     
     Qualcuno
     non vede di buon occhio questo approccio perch\'e teme si possa trattare di tentativi di
     ``kernel
-    bypass'' ma gli sviluppatori di soluzioni eBPF/XDP assicurano che ci\`o
-    non si
-    verificher\`a\footnote{\url{https://www.netronome.com/blog/avoid-kernel-bypass-in-your-network-infrastructure/}}.
+    bypass'' ma gli sviluppatori di soluzioni eBPF/XDP forniscono
+    rassicurazioni in questo senso\footnote{\url{https://www.netronome.com/blog/avoid-kernel-bypass-in-your-network-infrastructure/}}.
 
 \section{Conclusioni}
 
 Nonostante il fermento intorno alle nuove soluzioni di packet filtering \`e
-indubbio che iptables non sia messo in discussione o che si possa prevederne
-l'abbandono a breve.  Le ricadute pratiche del lavoro di sperimentazione
-svolto si limiteranno quindi alla messa in produzione di nftables nel firewall
-interno in virt\`u delle funzionalit\`a di cui abbiamo discusso nella sezione
-\ref{lab:captive}; non ritengo utile portare avanti la migrazione del
-firewall esterno.
+indubbio che iptables non verr\`a abbandonato nel breve periodo.  Le ricadute pratiche
+del lavoro di sperimentazione svolto si limiteranno all'introduzione di
+nftables sul firewall interno in virt\`u delle funzionalit\`a di
+cui abbiamo discusso nella sezione \ref{lab:captive}; non ritengo utile
+portare avanti la migrazione del firewall esterno.
