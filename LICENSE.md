@@ -1,1 +1,1 @@
-Creative Commons Attribution Share Alike 4.0
+Creative Commons Attribution 4.0 cc-by-4.0
